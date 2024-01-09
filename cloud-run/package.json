@@ -1,0 +1,27 @@
+{
+  "name": "rfq-backend",
+  "version": "1.0.0",
+  "description": "backend apies for rfq application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "nodemon",
+    "start": "yarn serve",
+    "serve": "node dist/index.js",
+    "build": "tsc",
+    "refresh-db": "yarn kysely-codegen --dialect postgres --out-file ./kysely/db.d.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.8",
+    "typescript": "^5.3.3"
+  }
+}
