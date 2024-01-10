@@ -47,4 +47,28 @@ export const ZProductsFetchReqBody = z.object({
   searchStr: z.string().optional().nullable(),
   pageSize: z.number().optional().nullable(),
 });
+
+export const ZProductCategoryStoreReq = z.object({
+  category_name: z.string(),
+});
+
 export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
+export type IProductCategoriesFetchReqBody = z.infer<
+  typeof ZProductsFetchReqBody
+>;
+export type IProductCategoryStoreReq = z.infer<typeof ZProductCategoryStoreReq>;
+
+//Vendors
+export const ZRVendorFetchReqBody = z.object({
+  sort: z
+    .object({
+      path: z.enum(["created_on", "modified_on"]),
+      direction: z.enum(["asc", "desc"]).optional(),
+    })
+    .optional()
+    .nullable(),
+  pageNo: z.number().optional().nullable(),
+  searchStr: z.string().optional().nullable(),
+  pageSize: z.number().optional().nullable(),
+});
+export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;

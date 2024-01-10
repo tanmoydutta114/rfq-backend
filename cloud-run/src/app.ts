@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.get(
-  "/roles",
+  "api/roles",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRoleFetchReqBody }],
@@ -38,12 +38,20 @@ app.get(
 );
 
 app.get(
-  "/products",
+  "api/products",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
   }),
   callableWrapper(productsController.getProducts)
+);
+app.get(
+  "api/product-categories",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
+  }),
+  callableWrapper(productsController.getProductCategories)
 );
 
 function checkPermissionAndReqSchema<T>(params: ICheckPermSchemaParams) {
