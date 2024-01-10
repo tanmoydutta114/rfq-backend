@@ -1,5 +1,5 @@
-export DATABASE_URL='postgres://postgres:}zOeN$(gxc:SqxT(@34.132.234.98/rfq-test'
-export DB_NAME="ereg_next2"
+export DATABASE_URL="postgres://postgres:1aBequP67q3rFjat@34.132.234.98/rfq-test"
+export DB_NAME="rfq-test"
 export DB_USER="postgres"
 export DB_PASS="1aBequP67q3rFjat"
 export CLOUD_SQL_CONNECTION_NAME="34.132.234.98"
@@ -8,4 +8,5 @@ export RUN_MODE="test"
 export RUN_MODE="test"
 export TEST_EMAIL="tanmoy.dutta@gmail.com"
 export TEST_UID="oTcGCWA3GQMwchEGTO8cEC9Bo1s2"
+export PAGE_SIZE=40
 yarn start-dev

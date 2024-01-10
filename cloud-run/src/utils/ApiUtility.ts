@@ -55,19 +55,18 @@ export class ApiUtility {
       const isTestMode = this.isDev();
       const accessType = params?.accessType;
       Log.i(`Checking authentication for ${req.url}`);
-
-      if (isTestMode) {
-        req.user = {
-          uid: process.env.TEST_UID,
-          email: process.env.TEST_EMAIL,
-        };
-      } else {
-        const authHeader = req.headers["authorization"] as string;
-        let authToken: string;
-        try {
+      try {
+        if (isTestMode) {
+          req.user = {
+            uid: process.env.TEST_UID,
+            email: process.env.TEST_EMAIL,
+          };
+          req.claims = { ut: "a" };
+        } else {
+          const authHeader = req.headers["authorization"] as string;
+          let authToken: string;
           if (authHeader?.split(" ")[0] === "Bearer") {
             authToken = authHeader.split(" ")[1];
-
             const decodedToken = await getAuth().verifyIdToken(authToken);
             req.user = {
               uid: decodedToken.uid,
@@ -75,27 +74,26 @@ export class ApiUtility {
               name: decodedToken.name,
             };
           }
-          if (params.accessType === "admin" && req.claims.ut === "a") {
-            Log.e(` checkUserAuth failed.`, null);
-            return res
-              .status(HttpStatusCode.UNAUTHORIZED)
-              .send(`Access not allowed user type is not admin.`);
-          } else {
-            if (accessType) {
-              Log.i("Logged in as admin");
-            } else {
-              Log.i("Logged in as partner");
-            }
-          }
-          req.verifyRes = { isAllowed: true };
-        } catch (err) {
-          Log.e(` Access not allowed`, err);
-          const errorObject = {
-            message: "Access not allowed",
-            error: err.message,
-          };
-          res.status(HttpStatusCode.UNAUTHORIZED).send(errorObject);
         }
+        if (params?.accessType === "admin" && req.claims.ut !== "a") {
+          Log.e(` checkUserAuth failed.`, null);
+          return res
+            .status(HttpStatusCode.UNAUTHORIZED)
+            .send(`Access not allowed user type is not admin.`);
+        }
+        if (req.claims.ut === "a") {
+          Log.i(`Logged in as admin`);
+        } else {
+          Log.i(`Logged in as employee`);
+        }
+        next();
+      } catch (err) {
+        Log.e(` Access not allowed`, err);
+        const errorObject = {
+          message: "Access not allowed",
+          error: err.message,
+        };
+        res.status(HttpStatusCode.UNAUTHORIZED).send(errorObject);
       }
     };
   }
