@@ -10,8 +10,13 @@ import { Log } from "./utils/Log";
 import { ApiUtility } from "./utils/ApiUtility";
 import { HttpError, sendErrorResponse } from "./utils/HttpError";
 import { HttpStatusCode } from "./utils/HttpStatusCodes";
-import { ICheckPermSchemaParams, ZRoleFetchReqBody } from "./utils/types";
+import {
+  ICheckPermSchemaParams,
+  ZProductsFetchReqBody,
+  ZRoleFetchReqBody,
+} from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
+import { productsController } from "./controllers/productsController";
 
 const app = express();
 app.use(cors());
@@ -30,6 +35,15 @@ app.get(
     zodValidation: [{ zodSchema: ZRoleFetchReqBody }],
   }),
   callableWrapper(rolesController.getRoles)
+);
+
+app.get(
+  "/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
+  }),
+  callableWrapper(productsController.getProducts)
 );
 
 function checkPermissionAndReqSchema<T>(params: ICheckPermSchemaParams) {

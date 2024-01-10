@@ -32,3 +32,19 @@ export const ZRoleFetchReqBody = z.object({
   pageSize: z.number().optional().nullable(),
 });
 export type IRoleFetchReqBody = z.infer<typeof ZRoleFetchReqBody>;
+
+//Products
+
+export const ZProductsFetchReqBody = z.object({
+  sort: z
+    .object({
+      path: z.enum(["created_on", "modified_on"]),
+      direction: z.enum(["asc", "desc"]).optional(),
+    })
+    .optional()
+    .nullable(),
+  pageNo: z.number().optional().nullable(),
+  searchStr: z.string().optional().nullable(),
+  pageSize: z.number().optional().nullable(),
+});
+export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
