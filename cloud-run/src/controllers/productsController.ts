@@ -2,6 +2,7 @@ import { Request } from "express";
 import { getSQLClient } from "../sql/database";
 import {
   IProductCategoriesFetchReqBody,
+  IProductCategoryStoreReq,
   IProductsFetchReqBody,
 } from "../utils/types";
 import { productsSqlOps } from "../sql/productsSqlOps";

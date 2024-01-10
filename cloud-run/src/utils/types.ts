@@ -72,3 +72,13 @@ export const ZRVendorFetchReqBody = z.object({
   pageSize: z.number().optional().nullable(),
 });
 export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;
+
+//users
+const ZCreateUserReq = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  contact_no: z.string().optional().nullable(),
+  role_id: z.number(),
+});
+
+export type ICreateUserReq = z.infer<typeof ZCreateUserReq>;
