@@ -1,6 +1,10 @@
 import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
-import { IRVendorFetchReqBody, IVenderCreateReq } from "../utils/types";
+import {
+  ICategoryType,
+  IRVendorFetchReqBody,
+  IVenderCreateReq,
+} from "../utils/types";
 import { createDate } from "../utils/utils";
 import { Log } from "../utils/Log";
 
@@ -87,10 +91,12 @@ export class vendorsSqlOps {
       Log.i(`Attaching the product categories with the vendors!`);
 
       const vendorCategoryMap: InsertObject<DB, "vendor_category_map">[] =
-        productCategories.map((category: number) => {
+        productCategories.map((category: ICategoryType) => {
           return {
-            category_id: category,
+            category_id: category.categoryId,
             vendor_id: vendorId,
+            sub_category_id: category.subCategoryId,
+            sub_sub_category_id: category.subSubCategoryId,
             created_by: userId,
             modified_by: userId,
             created_on: now,

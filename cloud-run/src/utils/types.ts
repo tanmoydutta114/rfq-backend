@@ -49,7 +49,10 @@ export const ZProductsFetchReqBody = z.object({
 });
 
 export const ZProductCategoryStoreReq = z.object({
-  category_name: z.string(),
+  categoryName: z.string(),
+  categoryId: z.number().optional().nullable(),
+  subCategoryId: z.number().optional().nullable(),
+  subSubCategoryId: z.number().optional().nullable(),
 });
 
 export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
@@ -72,6 +75,12 @@ export const ZRVendorFetchReqBody = z.object({
   pageSize: z.number().optional().nullable(),
 });
 
+const ZCategoryType = z.object({
+  categoryId: z.number(),
+  subCategoryId: z.number().optional().nullable(),
+  subSubCategoryId: z.number().optional().nullable(),
+});
+
 export const ZVenderCreateReq = z.object({
   name: z.string(),
   email: z.string().email().optional().nullable(),
@@ -81,11 +90,12 @@ export const ZVenderCreateReq = z.object({
     zipCode: z.string(),
   }),
   contactNo: z.string().optional().nullable(),
-  productCategories: z.number().array().optional().nullable(),
+  productCategories: ZCategoryType.array().optional().nullable(),
 });
 
 export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;
 export type IVenderCreateReq = z.infer<typeof ZVenderCreateReq>;
+export type ICategoryType = z.infer<typeof ZCategoryType>;
 
 //users
 export const ZCreateUserReq = z.object({

@@ -17,14 +17,36 @@ export interface FirebaseUsers {
 export interface Products {
   category_id: Generated<number | null>;
   created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  name: string | null;
+  sub_category: number | null;
+  sub_sub_category: number | null;
+}
+
+export interface ProductsCategory {
+  category_name: string | null;
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+}
+
+export interface ProductsSubCategory {
+  category_id: number | null;
+  category_name: string | null;
+  created_by: string | null;
   created_on: Timestamp | null;
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Timestamp | null;
-  name: string | null;
 }
 
-export interface ProductsCategory {
+export interface ProductsSubSubCategory {
+  category_id: number | null;
   category_name: string | null;
   created_by: string | null;
   created_on: Timestamp | null;
@@ -45,10 +67,10 @@ export interface ProductVendorMap {
 
 export interface Roles {
   created_by: string | null;
-  created_on: Timestamp | null;
+  created_on: Generated<Timestamp | null>;
   id: Generated<number>;
   modified_by: string | null;
-  modified_on: Timestamp | null;
+  modified_on: Generated<Timestamp | null>;
   role_name: string | null;
 }
 
@@ -69,14 +91,17 @@ export interface Users {
 export interface VendorCategoryMap {
   category_id: number | null;
   created_by: string | null;
-  created_on: Timestamp | null;
+  created_on: Generated<Timestamp | null>;
   id: Generated<number>;
   modified_by: string | null;
-  modified_on: Timestamp | null;
+  modified_on: Generated<Timestamp | null>;
+  sub_category_id: number | null;
+  sub_sub_category_id: number | null;
   vendor_id: number | null;
 }
 
 export interface Vendors {
+  address: string | null;
   contact_no: string | null;
   created_by: string | null;
   created_on: Timestamp | null;
@@ -92,6 +117,8 @@ export interface DB {
   product_vendor_map: ProductVendorMap;
   products: Products;
   products_category: ProductsCategory;
+  products_sub_category: ProductsSubCategory;
+  products_sub_sub_category: ProductsSubSubCategory;
   roles: Roles;
   users: Users;
   vendor_category_map: VendorCategoryMap;

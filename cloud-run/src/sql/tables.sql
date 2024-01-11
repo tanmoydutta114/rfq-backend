@@ -40,24 +40,57 @@ CREATE TABLE products_category (
     modified_by TEXT REFERENCES firebase_users(firebase_user_id)
 );
 
+CREATE TABLE products_sub_category (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR,
+    category_id INTEGER REFERENCES products_category(id),
+    created_on TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+CREATE TABLE products_sub_category (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR,
+    category_id INTEGER REFERENCES products_category(id),
+    created_on TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+CREATE TABLE products_sub_sub_category (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR,
+    category_id INTEGER REFERENCES products_sub_category(id),
+    created_on TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     name VARCHAR,
     category_id INTEGER REFERENCES products_category(id),
-    created_on TIMESTAMP DEFAULT current_timestamp,
+    sub_category INTEGER REFERENCES products_sub_category(id),
+    sub_sub_category INTEGER REFERENCES products_sub_sub_category(id),
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by TEXT REFERENCES firebase_users(firebase_user_id),
-    modified_on TIMESTAMP DEFAULT current_timestamp,
+    modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_by TEXT REFERENCES firebase_users(firebase_user_id)
 );
 
 
 
-
+-- add address field
 CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR,
 	email VARCHAR,
-    address VARCHAR,
+	address VARCHAR,
 	contact_no VARCHAR,
 	created_on TIMESTAMP,
     created_by TEXT REFERENCES firebase_users(firebase_user_id),
@@ -68,7 +101,9 @@ CREATE TABLE vendors (
 CREATE TABLE vendor_category_map (
 	id SERIAL PRIMARY KEY,
 	vendor_id INTEGER REFERENCES vendors(id) ,
-	category_id INTEGER REFERENCES products_category(id),
+	category_id INTEGER REFERENCES products_category(id) ,
+	sub_category_id INTEGER REFERENCES products_sub_category(id) DEFAULT NULL,
+	sub_sub_category_id INTEGER REFERENCES products_sub_sub_category(id) DEFAULT NULL,
 	created_on TIMESTAMP,
     created_by TEXT REFERENCES firebase_users(firebase_user_id),
     modified_on TIMESTAMP,
