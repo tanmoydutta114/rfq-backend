@@ -55,11 +55,19 @@ export const ZProductCategoryStoreReq = z.object({
   subSubCategoryId: z.number().optional().nullable(),
 });
 
+export const ZProductStoreReq = z.object({
+  name: z.string(),
+  categoryId: z.number(),
+  subCategoryId: z.number().optional().nullable(),
+  subSubCategoryId: z.number().optional().nullable(),
+});
+
 export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
 export type IProductCategoriesFetchReqBody = z.infer<
   typeof ZProductsFetchReqBody
 >;
 export type IProductCategoryStoreReq = z.infer<typeof ZProductCategoryStoreReq>;
+export type IProductStoreReq = z.infer<typeof ZProductStoreReq>;
 
 //Vendors
 export const ZRVendorFetchReqBody = z.object({

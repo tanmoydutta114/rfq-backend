@@ -10,11 +10,13 @@ import {
   ZProductsFetchReqBody,
   ZRoleFetchReqBody,
   ZVenderCreateReq,
+  ZProductStoreReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
 import { usersController } from "./controllers/usersController";
 import { vendorsController } from "./controllers/vendorsController";
+import { ZodSchema } from "zod";
 
 const app = express();
 app.use(cors());
@@ -43,6 +45,15 @@ app.post(
   }),
   callableWrapper(productsController.getProducts)
 );
+app.post(
+  "/api/product",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductStoreReq }],
+  }),
+  callableWrapper(productsController.storeProducts)
+);
+
 app.post(
   "/api/query/product-categories",
   ApiUtility.checkUserAuth({}),

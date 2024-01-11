@@ -3,6 +3,7 @@ import { getSQLClient } from "../sql/database";
 import {
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
+  IProductStoreReq,
   IProductsFetchReqBody,
 } from "../utils/types";
 import { productsSqlOps } from "../sql/productsSqlOps";
@@ -12,6 +13,19 @@ export class productsController {
     const sqlCLient = getSQLClient();
     const reqBody: IProductsFetchReqBody = req.body;
     const response = await productsSqlOps.getProducts(sqlCLient, reqBody);
+    return response;
+  }
+
+  static async storeProducts(req: Request) {
+    const sqlClient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const reqBody: IProductStoreReq = req.body;
+
+    const response = await productsSqlOps.storeProducts(
+      sqlClient,
+      userId,
+      reqBody
+    );
     return response;
   }
 

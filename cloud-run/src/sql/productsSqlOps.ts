@@ -3,6 +3,7 @@ import { DB } from "../../kysely/db";
 import {
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
+  IProductStoreReq,
   IProductsFetchReqBody,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
@@ -192,5 +193,30 @@ export class productsSqlOps {
       isSuccess: true,
       message: `Product categories created successfully!`,
     };
+  }
+
+  static async storeProducts(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    requestBody: IProductStoreReq
+  ) {
+    const now = createDate();
+    const [response] = await sqlClient
+      .insertInto("products")
+      .values({
+        name: requestBody.name,
+        category_id: requestBody.categoryId,
+        sub_category: requestBody.subCategoryId,
+        sub_sub_category: requestBody.subCategoryId,
+        created_on: now,
+        created_by: userId,
+        modified_on: now,
+        modified_by: userId,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Product has been added successfully! with ID ${response.id}`);
+
+    return { isSuccess: true, message: `Product added successfully!` };
   }
 }
