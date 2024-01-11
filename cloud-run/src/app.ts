@@ -12,11 +12,13 @@ import { HttpError, sendErrorResponse } from "./utils/HttpError";
 import { HttpStatusCode } from "./utils/HttpStatusCodes";
 import {
   ICheckPermSchemaParams,
+  ZCreateUserReq,
   ZProductsFetchReqBody,
   ZRoleFetchReqBody,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
+import { usersController } from "./controllers/usersController";
 
 const app = express();
 app.use(cors());
@@ -28,8 +30,8 @@ app.get("/", (req, res) => {
   res.send(`Hello from cloud run!`);
 });
 
-app.get(
-  "api/roles",
+app.post(
+  "/api/query/roles",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRoleFetchReqBody }],
@@ -37,21 +39,30 @@ app.get(
   callableWrapper(rolesController.getRoles)
 );
 
-app.get(
-  "api/products",
+app.post(
+  "api/query/products",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
   }),
   callableWrapper(productsController.getProducts)
 );
-app.get(
-  "api/product-categories",
+app.post(
+  "api/query/product-categories",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
   }),
   callableWrapper(productsController.getProductCategories)
+);
+
+app.post(
+  "/api/create-user",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZCreateUserReq }],
+  }),
+  callableWrapper(usersController.createUser)
 );
 
 function checkPermissionAndReqSchema<T>(params: ICheckPermSchemaParams) {

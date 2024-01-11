@@ -7,9 +7,10 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface FirebaseUsers {
+  contact_number: string | null;
   created_on: Timestamp | null;
   firebase_user_id: string;
-  user_email: string | null;
+  user_email: string;
   user_name: string | null;
 }
 
@@ -62,6 +63,7 @@ export interface Users {
   modified_on: Timestamp | null;
   name: string | null;
   role_id: number | null;
+  status: Generated<number | null>;
 }
 
 export interface VendorCategoryMap {

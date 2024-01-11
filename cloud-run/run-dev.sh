@@ -7,6 +7,6 @@ export DATABASE_PORT="5432"
 export RUN_MODE="test"
 export RUN_MODE="test"
 export TEST_EMAIL="tanmoy.dutta@gmail.com"
-export TEST_UID="oTcGCWA3GQMwchEGTO8cEC9Bo1s2"
+export TEST_UID="2NASmmNxIVdrfPyQodbOyOEWRzQ2"
 export PAGE_SIZE=40
 yarn start-dev

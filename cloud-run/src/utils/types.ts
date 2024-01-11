@@ -74,11 +74,29 @@ export const ZRVendorFetchReqBody = z.object({
 export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;
 
 //users
-const ZCreateUserReq = z.object({
+export const ZCreateUserReq = z.object({
   name: z.string(),
   email: z.string().email(),
   contact_no: z.string().optional().nullable(),
   role_id: z.number(),
 });
 
+const ZFirebaseUsersDetails = z.object({
+  firebase_user_id: z.string(),
+  user_name: z.string(),
+  user_email: z.string().email(),
+  contact_number: z.string().optional().nullable(),
+});
+
+const ZUsersDetails = ZCreateUserReq.extend({
+  firebase_user_id: z.string(),
+});
+
+export enum UserStatus {
+  Active = 0,
+  Inactive = 1,
+}
+
 export type ICreateUserReq = z.infer<typeof ZCreateUserReq>;
+export type IFirebaseUsersDetails = z.infer<typeof ZFirebaseUsersDetails>;
+export type IUsersDetails = z.infer<typeof ZUsersDetails>;
