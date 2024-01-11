@@ -57,6 +57,7 @@ CREATE TABLE vendors (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR,
 	email VARCHAR,
+    address VARCHAR,
 	contact_no VARCHAR,
 	created_on TIMESTAMP,
     created_by TEXT REFERENCES firebase_users(firebase_user_id),

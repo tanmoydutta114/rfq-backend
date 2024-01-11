@@ -1,6 +1,8 @@
-import { Kysely } from "kysely";
+import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
-import { IRVendorFetchReqBody } from "../utils/types";
+import { IRVendorFetchReqBody, IVenderCreateReq } from "../utils/types";
+import { createDate } from "../utils/utils";
+import { Log } from "../utils/Log";
 
 export class vendorsSqlOps {
   static async getVendors(
@@ -50,5 +52,62 @@ export class vendorsSqlOps {
       totalCount,
       hasMore,
     };
+  }
+
+  static async storeVendors(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    reqBody: IVenderCreateReq
+  ) {
+    const productCategories = reqBody.productCategories;
+    const now = createDate();
+    const response = await sqlClient.transaction().execute(async (db) => {
+      const [storeVendorRes] = await db
+        .insertInto("vendors")
+        .values({
+          name: reqBody.name,
+          email: reqBody.email,
+          contact_no: reqBody.contactNo,
+          created_on: now,
+          modified_on: now,
+          created_by: userId,
+          modified_by: userId,
+        })
+        .returning("id")
+        .execute();
+      const vendorId = storeVendorRes.id;
+      Log.i(`Vendor added successfully, with id ${vendorId}`);
+
+      if (!productCategories) {
+        return {
+          isSuccess: true,
+          message: `Vendor added successfully! but no product categories mentioned.`,
+        };
+      }
+      Log.i(`Attaching the product categories with the vendors!`);
+
+      const vendorCategoryMap: InsertObject<DB, "vendor_category_map">[] =
+        productCategories.map((category: number) => {
+          return {
+            category_id: category,
+            vendor_id: vendorId,
+            created_by: userId,
+            modified_by: userId,
+            created_on: now,
+            modified_on: now,
+          };
+        });
+      const productCategoryMapRes = await db
+        .insertInto("vendor_category_map")
+        .values(vendorCategoryMap)
+        .returning("id")
+        .execute();
+      Log.i(`Category map updated , ${productCategoryMapRes}`);
+      return {
+        isSuccess: true,
+        message: `Vendors added successfully!`,
+      };
+    });
+    return response;
   }
 }

@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { getSQLClient } from "../sql/database";
-import { IRVendorFetchReqBody } from "../utils/types";
+import { IRVendorFetchReqBody, IVenderCreateReq } from "../utils/types";
 import { vendorsSqlOps } from "../sql/vendorsSqlOps";
 
 export class vendorsController {
@@ -12,5 +12,17 @@ export class vendorsController {
       isSuccess: true,
       response,
     };
+  }
+
+  static async storeVendorDetails(req: Request) {
+    const sqlClient = getSQLClient();
+    const reqBody: IVenderCreateReq = req.body;
+    const userId = req.user?.uid ?? "";
+    const response = await vendorsSqlOps.storeVendors(
+      sqlClient,
+      userId,
+      reqBody
+    );
+    return response;
   }
 }

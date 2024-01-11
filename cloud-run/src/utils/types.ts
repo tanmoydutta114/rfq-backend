@@ -71,7 +71,21 @@ export const ZRVendorFetchReqBody = z.object({
   searchStr: z.string().optional().nullable(),
   pageSize: z.number().optional().nullable(),
 });
+
+export const ZVenderCreateReq = z.object({
+  name: z.string(),
+  email: z.string().email().optional().nullable(),
+  address: z.object({
+    line1: z.string(),
+    line2: z.string(),
+    zipCode: z.string(),
+  }),
+  contactNo: z.string().optional().nullable(),
+  productCategories: z.number().array().optional().nullable(),
+});
+
 export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;
+export type IVenderCreateReq = z.infer<typeof ZVenderCreateReq>;
 
 //users
 export const ZCreateUserReq = z.object({

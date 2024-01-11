@@ -1,12 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
-// import { HttpError, sendErrorResponse } from "./utils/HttpError";
-import admin from "firebase-admin";
-import { getAuth } from "firebase-admin/auth";
 import cors from "cors";
 import { get, set } from "lodash";
-import { ZodArray, ZodEffects, ZodObject, ZodRecord, z } from "zod";
-// import { companyController } from "./controllers/companyController";
-import { Log } from "./utils/Log";
 import { ApiUtility } from "./utils/ApiUtility";
 import { HttpError, sendErrorResponse } from "./utils/HttpError";
 import { HttpStatusCode } from "./utils/HttpStatusCodes";
@@ -15,10 +9,12 @@ import {
   ZCreateUserReq,
   ZProductsFetchReqBody,
   ZRoleFetchReqBody,
+  ZVenderCreateReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
 import { usersController } from "./controllers/usersController";
+import { vendorsController } from "./controllers/vendorsController";
 
 const app = express();
 app.use(cors());
@@ -40,7 +36,7 @@ app.post(
 );
 
 app.post(
-  "api/query/products",
+  "/api/query/products",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
@@ -48,12 +44,20 @@ app.post(
   callableWrapper(productsController.getProducts)
 );
 app.post(
-  "api/query/product-categories",
+  "/api/query/product-categories",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
   }),
   callableWrapper(productsController.getProductCategories)
+);
+app.post(
+  "/api/query/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZVenderCreateReq }],
+  }),
+  callableWrapper(vendorsController.storeVendorDetails)
 );
 
 app.post(
