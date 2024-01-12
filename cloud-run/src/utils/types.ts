@@ -55,10 +55,19 @@ export const ZProductsFetchReqBody = z.object({
 });
 
 export const ZProductCategoryStoreReq = z.object({
-  categoryName: z.string(),
-  categoryId: z.number().optional().nullable(),
-  subCategoryId: z.number().optional().nullable(),
-  subSubCategoryId: z.number().optional().nullable(),
+  categories: z
+    .object({
+      name: z.string(),
+      subCategories: z
+        .object({
+          name: z.string(),
+          subSubCategories: z.string().array().optional().nullable(),
+        })
+        .array()
+        .optional()
+        .nullable(),
+    })
+    .array(),
 });
 
 export const ZProductStoreReq = z.object({

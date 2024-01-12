@@ -139,18 +139,16 @@ export class productsSqlOps {
     userId: string,
     categoryReqBody: IProductCategoryStoreReq
   ) {
-    const categoryName = categoryReqBody.categoryName;
-    const { categoryId, subCategoryId, subSubCategoryId } = categoryReqBody;
+    const mainCategoryName = categoryReqBody.categories[0].name;
+    const subCategories = categoryReqBody.categories[0].subCategories;
     const now = createDate();
 
-    if (!categoryId) {
-      Log.i(
-        `This is main category, so we store the category in products_category table!`
-      );
-      const categoryId = await sqlClient
+    await sqlClient.transaction().execute(async (sqlClient) => {
+      Log.i(`Storing the main category!`);
+      const [mainCategoryStore] = await sqlClient
         .insertInto("products_category")
         .values({
-          category_name: categoryName,
+          category_name: mainCategoryName,
           created_by: userId,
           created_on: now,
           modified_by: userId,
@@ -158,37 +156,54 @@ export class productsSqlOps {
         })
         .returning("id")
         .execute();
-    } else if (!subCategoryId) {
       Log.i(
-        `This is sub category, so we store the category in products_sub_category table!`
+        `The main category stored successfully! with id ${mainCategoryStore.id}`
       );
-      const categoryId = await sqlClient
-        .insertInto("products_sub_category")
-        .values({
-          category_name: categoryName,
-          created_by: userId,
-          created_on: now,
-          modified_by: userId,
-          modified_on: now,
-        })
-        .returning("id")
-        .execute();
-    } else if (!subSubCategoryId) {
-      Log.i(
-        `This is sub sub category, so we store the category in product_sub_sub_category table!`
-      );
-      const categoryId = await sqlClient
-        .insertInto("products_sub_sub_category")
-        .values({
-          category_name: categoryName,
-          created_by: userId,
-          created_on: now,
-          modified_by: userId,
-          modified_on: now,
-        })
-        .returning("id")
-        .execute();
-    }
+      if (subCategories && subCategories?.length > 0) {
+        Log.i(`subCategories present storing them!`);
+        subCategories.forEach(async (element) => {
+          const subCategoryName = element.name;
+          const subSubCategories = element.subSubCategories;
+
+          const [storeSubCategoryRes] = await sqlClient
+            .insertInto("products_sub_category")
+            .values({
+              category_id: mainCategoryStore.id,
+              category_name: subCategoryName,
+              created_by: userId,
+              created_on: now,
+              modified_by: userId,
+              modified_on: now,
+            })
+            .returning("id")
+            .execute();
+          Log.i(
+            `sub category ${subCategoryName} stored successfully!, ID : ${storeSubCategoryRes.id}`
+          );
+
+          if (subSubCategories && subSubCategories.length > 0) {
+            const subSubCategoryDate = subSubCategories.map((category) => {
+              return {
+                category_id: storeSubCategoryRes.id,
+                category_name: category,
+                created_by: userId,
+                created_on: now,
+                modified_by: userId,
+                modified_on: now,
+              };
+            });
+
+            const storeSubSubCategories = await sqlClient
+              .insertInto("products_sub_category")
+              .values(subSubCategoryDate)
+              .returning("id")
+              .execute();
+            Log.i(`Sub sub categories added successfully!`);
+          }
+        });
+      }
+    });
+
     return {
       isSuccess: true,
       message: `Product categories created successfully!`,
