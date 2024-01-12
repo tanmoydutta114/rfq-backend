@@ -31,7 +31,13 @@ export const ZRoleFetchReqBody = z.object({
   searchStr: z.string().optional().nullable(),
   pageSize: z.number().optional().nullable(),
 });
+
+const ZRoleCreateReq = z.object({
+  roleName: z.string(),
+});
+
 export type IRoleFetchReqBody = z.infer<typeof ZRoleFetchReqBody>;
+export type IRoleCreateReq = z.infer<typeof ZRoleCreateReq>;
 
 //Products
 

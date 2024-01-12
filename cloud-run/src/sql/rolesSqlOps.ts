@@ -1,6 +1,8 @@
 import { Kysely } from "kysely";
 import { DB } from "../../kysely/db";
-import { IRoleFetchReqBody } from "../utils/types";
+import { IRoleCreateReq, IRoleFetchReqBody } from "../utils/types";
+import { createDate } from "../utils/utils";
+import { Log } from "../utils/Log";
 
 export class rolesSqlOps {
   static async getRoleFromDB(
@@ -53,6 +55,30 @@ export class rolesSqlOps {
       roles,
       totalCount,
       hasMore,
+    };
+  }
+
+  static async storeRole(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    requestBody: IRoleCreateReq
+  ) {
+    const now = createDate();
+    const [response] = await sqlClient
+      .insertInto("roles")
+      .values({
+        role_name: requestBody.roleName,
+        created_on: now,
+        created_by: userId,
+        modified_on: now,
+        modified_by: userId,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Role has been created successfully with id ${response.id}`);
+    return {
+      isSuccess: true,
+      message: `role creation successfully!`,
     };
   }
 }
