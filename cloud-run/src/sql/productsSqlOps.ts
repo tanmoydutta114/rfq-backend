@@ -1,4 +1,4 @@
-import { Kysely } from "kysely";
+import { Kysely, sql } from "kysely";
 import { DB } from "../../kysely/db";
 import {
   IProductCategoriesFetchReqBody,
@@ -76,61 +76,121 @@ export class productsSqlOps {
     if (!requestBody.pageNo) {
       requestBody.pageNo = 1;
     }
-    const total_roles = await sqlClient
-      .selectFrom("products_category as pc")
-      .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
-      .leftJoin(
-        "products_sub_sub_category as pssc",
-        "pssc.category_id",
-        "psc.id"
-      )
-      .$if(!!requestBody.searchStr, (qb) =>
-        qb.where((eb) =>
-          eb.or([
-            eb(
-              "category_name",
-              "ilike",
-              `%${requestBody.searchStr}%` as string
-            ),
-          ])
-        )
-      )
-      .select((eb) => eb.fn.countAll<number>().as("total_categories"))
-      .execute();
-    const totalCount = total_roles[0].total_categories;
+    // const total_roles = await sqlClient
+    //   .selectFrom("products_category as pc")
+    //   .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
+    //   .leftJoin(
+    //     "products_sub_sub_category as pssc",
+    //     "pssc.category_id",
+    //     "psc.id"
+    //   )
+    //   .$if(!!requestBody.searchStr, (qb) =>
+    //     qb.where((eb) =>
+    //       eb.or([
+    //         eb(
+    //           "category_name",
+    //           "ilike",
+    //           `%${requestBody.searchStr}%` as string
+    //         ),
+    //       ])
+    //     )
+    //   )
+    //   .select((eb) => eb.fn.countAll<number>().as("total_categories"))
+    //   .execute();
+    // const totalCount = total_roles[0].total_categories;
 
-    const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
+    // const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
 
-    const roles = await sqlClient
-      .selectFrom("products_category as pc")
-      .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
-      .leftJoin(
-        "products_sub_sub_category as pssc",
-        "pssc.category_id",
-        "psc.id"
-      )
-      .$if(!!requestBody.searchStr, (qb) =>
-        qb.where((eb) =>
-          eb.or([
-            eb(
-              "category_name",
-              "ilike",
-              `%${requestBody.searchStr}%` as string
-            ),
-          ])
-        )
-      )
-      .orderBy(requestBody.sort.path, requestBody.sort.direction)
-      .limit(PAGE_SIZE)
-      .offset(OFFSET)
-      .select(["id", "category_name", "created_on"])
-      .execute();
+    // const roles = await sqlClient
+    //   .selectFrom("products_category as pc")
+    //   .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
+    //   .leftJoin(
+    //     "products_sub_sub_category as pssc",
+    //     "pssc.category_id",
+    //     "psc.id"
+    //   )
+    //   .$if(!!requestBody.searchStr, (qb) =>
+    //     qb.where((eb) =>
+    //       eb.or([
+    //         eb(
+    //           "category_name",
+    //           "ilike",
+    //           `%${requestBody.searchStr}%` as string
+    //         ),
+    //       ])
+    //     )
+    //   )
+    //   .orderBy(requestBody.sort.path, requestBody.sort.direction)
+    //   .limit(PAGE_SIZE)
+    //   .offset(OFFSET)
 
-    const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
+    //   .execute();
+
+    const res = await sql`WITH RecursiveCTE AS (
+    SELECT
+        pc.id AS category_id,
+        pc.category_name AS category_name,
+        NULL AS sub_category_id,
+        NULL AS sub_category_name,
+        NULL AS sub_sub_category_id,
+        NULL AS sub_sub_category_name,
+        ROW_NUMBER() OVER (ORDER BY pc.id) AS row_num
+    FROM products_category pc
+
+    UNION ALL
+
+    SELECT
+        sc.category_id,
+        sc.category_name,
+        scs.id AS sub_category_id,
+        scs.category_name AS sub_category_name,
+        NULL AS sub_sub_category_id,
+        NULL AS sub_sub_category_name,
+        ROW_NUMBER() OVER (ORDER BY pc.id, scs.id) AS row_num
+    FROM RecursiveCTE rc
+    JOIN products_category pc ON rc.category_id = pc.id
+    JOIN products_sub_category sc ON pc.id = sc.category_id
+
+    UNION ALL
+
+    SELECT
+        ssc.category_id,
+        ssc.category_name,
+        sscs.category_id AS sub_category_id,
+        sscs.category_name AS sub_category_name,
+        sscs.id AS sub_sub_category_id,
+        sscs.category_name AS sub_sub_category_name,
+        ROW_NUMBER() OVER (ORDER BY pc.id, scs.id, sscs.id) AS row_num
+    FROM RecursiveCTE rc
+    JOIN products_category pc ON rc.category_id = pc.id
+    JOIN products_sub_category scs ON pc.id = scs.category_id
+    JOIN products_sub_sub_category sscs ON scs.id = sscs.category_id
+)
+
+SELECT
+    jsonb_pretty(jsonb_object_agg(
+        'categories',
+        jsonb_agg(jsonb_build_object(
+            'name', category_name,
+            'subCategories', CASE
+                WHEN sub_category_id IS NOT NULL THEN jsonb_agg(jsonb_build_object(
+                    'name', sub_category_name,
+                    'subSubCategories', CASE
+                        WHEN sub_sub_category_id IS NOT NULL THEN jsonb_agg(sub_sub_category_name)
+                    END
+                ))
+            END
+        ))
+    )) AS result
+FROM RecursiveCTE
+WHERE row_num = 1;
+`.execute(sqlClient);
+
+    // const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
     return {
-      roles,
-      totalCount,
-      hasMore,
+      res,
+      // totalCount,
+      // hasMore,
     };
   }
 
@@ -143,9 +203,9 @@ export class productsSqlOps {
     const subCategories = categoryReqBody.categories[0].subCategories;
     const now = createDate();
 
-    await sqlClient.transaction().execute(async (sqlClient) => {
+    const response = await sqlClient.transaction().execute(async (db) => {
       Log.i(`Storing the main category!`);
-      const [mainCategoryStore] = await sqlClient
+      const [mainCategoryStore] = await db
         .insertInto("products_category")
         .values({
           category_name: mainCategoryName,
@@ -161,11 +221,11 @@ export class productsSqlOps {
       );
       if (subCategories && subCategories?.length > 0) {
         Log.i(`subCategories present storing them!`);
-        subCategories.forEach(async (element) => {
+        for (const element of subCategories) {
           const subCategoryName = element.name;
-          const subSubCategories = element.subSubCategories;
+          const subSubCategories = element?.subSubCategories;
 
-          const [storeSubCategoryRes] = await sqlClient
+          const [storeSubCategoryRes] = await db
             .insertInto("products_sub_category")
             .values({
               category_id: mainCategoryStore.id,
@@ -192,22 +252,25 @@ export class productsSqlOps {
                 modified_on: now,
               };
             });
-
-            const storeSubSubCategories = await sqlClient
-              .insertInto("products_sub_category")
+            const [storeSubSubCategories] = await db
+              .insertInto("products_sub_sub_category")
               .values(subSubCategoryDate)
               .returning("id")
               .execute();
-            Log.i(`Sub sub categories added successfully!`);
+            Log.i(
+              `Sub sub categories added successfully!`,
+              storeSubSubCategories
+            );
           }
-        });
+          Log.i(`No sub sub categories for sub category ${subCategoryName}`);
+        }
       }
+      return {
+        isSuccess: true,
+        message: `Product categories created successfully!`,
+      };
     });
-
-    return {
-      isSuccess: true,
-      message: `Product categories created successfully!`,
-    };
+    return response;
   }
 
   static async storeProducts(

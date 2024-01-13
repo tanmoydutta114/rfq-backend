@@ -148,18 +148,18 @@ export type ICreateUserReq = z.infer<typeof ZCreateUserReq>;
 export type IFirebaseUsersDetails = z.infer<typeof ZFirebaseUsersDetails>;
 export type IUsersDetails = z.infer<typeof ZUsersDetails>;
 
-
-
 // RFQ
 
 export const ZRfqStoreReq = z.object({
-  rfqId : z.string(),
-  vendors : z.object({
-    vendorName : z.string(),
-    vendorId: z.number(),
-    vendorEmail : z.string().email(),
-  }).array(),
-  emailBody: z.string();
-})
+  rfqId: z.string(),
+  vendors: z
+    .object({
+      vendorName: z.string(),
+      vendorId: z.number(),
+      vendorEmail: z.string().email(),
+    })
+    .array(),
+  emailBody: z.string(),
+});
 
-export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>
+export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>;
