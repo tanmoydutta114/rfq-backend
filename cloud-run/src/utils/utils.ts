@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 export function createDate(copyValue?: Date | string | null) {
   if (!copyValue) {
     return new Date();
@@ -7,4 +9,7 @@ export function createDate(copyValue?: Date | string | null) {
   }
   // The assumption here is that if copyValue is string, it will be in ISO 8601 format.
   return new Date(copyValue);
+}
+export function generateId(): string {
+  return uuidv4();
 }

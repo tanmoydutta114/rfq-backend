@@ -65,6 +65,19 @@ export interface ProductVendorMap {
   vendor_id: number | null;
 }
 
+export interface Rfqs {
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  email_send: boolean | null;
+  id: Generated<number>;
+  is_responded: boolean | null;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  rfq_id: string | null;
+  vendor_access_url: string | null;
+  vendor_id: number | null;
+}
+
 export interface Roles {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
@@ -119,6 +132,7 @@ export interface DB {
   products_category: ProductsCategory;
   products_sub_category: ProductsSubCategory;
   products_sub_sub_category: ProductsSubSubCategory;
+  rfqs: Rfqs;
   roles: Roles;
   users: Users;
   vendor_category_map: VendorCategoryMap;

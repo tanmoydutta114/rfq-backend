@@ -121,3 +121,15 @@ CREATE TABLE product_vendor_map (
 );
 
 
+CREATE TABLE rfqs (
+    id SERIAL PRIMARY KEY,
+    rfq_id VARCHAR UNIQUE,
+    vendor_id INTEGER REFERENCES vendors(id),
+    vendor_access_url VARCHAR UNIQUE,
+    email_send BOOLEAN,
+    is_responded BOOLEAN,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);

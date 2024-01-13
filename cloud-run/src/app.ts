@@ -11,6 +11,9 @@ import {
   ZRoleFetchReqBody,
   ZVenderCreateReq,
   ZProductStoreReq,
+  ZRVendorFetchReqBody,
+  ZRoleCreateReq,
+  ZProductCategoryStoreReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -38,6 +41,15 @@ app.post(
 );
 
 app.post(
+  "/api/roles",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRoleCreateReq }],
+  }),
+  callableWrapper(rolesController.storeRoles)
+);
+
+app.post(
   "/api/query/products",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
@@ -62,13 +74,32 @@ app.post(
   }),
   callableWrapper(productsController.getProductCategories)
 );
+
 app.post(
-  "/api/query/vendors",
+  "/api/product-categories",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductCategoryStoreReq }],
+  }),
+  callableWrapper(productsController.storeProductCategories)
+);
+
+app.post(
+  "/api/vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZVenderCreateReq }],
   }),
   callableWrapper(vendorsController.storeVendorDetails)
+);
+
+app.post(
+  "/api/query/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRVendorFetchReqBody }],
+  }),
+  callableWrapper(vendorsController.getVendors)
 );
 
 app.post(
