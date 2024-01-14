@@ -1,4 +1,4 @@
-import { Kysely, sql } from "kysely";
+import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
 import {
   IProductCategoriesFetchReqBody,
@@ -8,6 +8,7 @@ import {
 } from "../utils/types";
 import { createDate } from "../utils/utils";
 import { Log } from "../utils/Log";
+import { InsertObjectOrList } from "kysely/dist/cjs/parser/insert-values-parser";
 
 export class productsSqlOps {
   static async getProducts(
@@ -76,121 +77,86 @@ export class productsSqlOps {
     if (!requestBody.pageNo) {
       requestBody.pageNo = 1;
     }
-    // const total_roles = await sqlClient
-    //   .selectFrom("products_category as pc")
-    //   .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
-    //   .leftJoin(
-    //     "products_sub_sub_category as pssc",
-    //     "pssc.category_id",
-    //     "psc.id"
-    //   )
-    //   .$if(!!requestBody.searchStr, (qb) =>
-    //     qb.where((eb) =>
-    //       eb.or([
-    //         eb(
-    //           "category_name",
-    //           "ilike",
-    //           `%${requestBody.searchStr}%` as string
-    //         ),
-    //       ])
-    //     )
-    //   )
-    //   .select((eb) => eb.fn.countAll<number>().as("total_categories"))
-    //   .execute();
-    // const totalCount = total_roles[0].total_categories;
+    const total_roles = await sqlClient
+      .selectFrom("products_category as pc")
+      .leftJoin("products_sub_category as psc", "psc.main_category_id", "pc.id")
+      .leftJoin(
+        "products_sub_sub_category as pssc",
+        "pssc.sub_category_id",
+        "psc.id"
+      )
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([
+            eb(
+              "pc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+            eb(
+              "psc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+            eb(
+              "pssc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+          ])
+        )
+      )
+      .select((eb) => eb.fn.countAll<number>().as("total_categories"))
+      .execute();
+    const totalCount = total_roles[0].total_categories;
 
-    // const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
+    const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
 
-    // const roles = await sqlClient
-    //   .selectFrom("products_category as pc")
-    //   .leftJoin("products_sub_category as psc", "psc.category_id", "pc.id")
-    //   .leftJoin(
-    //     "products_sub_sub_category as pssc",
-    //     "pssc.category_id",
-    //     "psc.id"
-    //   )
-    //   .$if(!!requestBody.searchStr, (qb) =>
-    //     qb.where((eb) =>
-    //       eb.or([
-    //         eb(
-    //           "category_name",
-    //           "ilike",
-    //           `%${requestBody.searchStr}%` as string
-    //         ),
-    //       ])
-    //     )
-    //   )
-    //   .orderBy(requestBody.sort.path, requestBody.sort.direction)
-    //   .limit(PAGE_SIZE)
-    //   .offset(OFFSET)
+    const categories = await sqlClient
+      .selectFrom("products_category as pc")
+      .leftJoin("products_sub_category as psc", "psc.main_category_id", "pc.id")
+      .leftJoin(
+        "products_sub_sub_category as pssc",
+        "pssc.sub_category_id",
+        "psc.id"
+      )
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([
+            eb(
+              "pc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+            eb(
+              "psc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+            eb(
+              "pssc.category_name",
+              "ilike",
+              `%${requestBody.searchStr}%` as string
+            ),
+          ])
+        )
+      )
+      .orderBy("pc.created_on", requestBody.sort.direction)
+      .limit(PAGE_SIZE)
+      .offset(OFFSET)
+      .select([
+        "pc.category_name as category_name",
+        "psc.category_name as sub_category_name",
+        "pssc.category_name as sub_sub_category_name",
+      ])
+      .execute();
 
-    //   .execute();
+    const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
 
-    const res = await sql`WITH RecursiveCTE AS (
-    SELECT
-        pc.id AS category_id,
-        pc.category_name AS category_name,
-        NULL AS sub_category_id,
-        NULL AS sub_category_name,
-        NULL AS sub_sub_category_id,
-        NULL AS sub_sub_category_name,
-        ROW_NUMBER() OVER (ORDER BY pc.id) AS row_num
-    FROM products_category pc
-
-    UNION ALL
-
-    SELECT
-        sc.category_id,
-        sc.category_name,
-        scs.id AS sub_category_id,
-        scs.category_name AS sub_category_name,
-        NULL AS sub_sub_category_id,
-        NULL AS sub_sub_category_name,
-        ROW_NUMBER() OVER (ORDER BY pc.id, scs.id) AS row_num
-    FROM RecursiveCTE rc
-    JOIN products_category pc ON rc.category_id = pc.id
-    JOIN products_sub_category sc ON pc.id = sc.category_id
-
-    UNION ALL
-
-    SELECT
-        ssc.category_id,
-        ssc.category_name,
-        sscs.category_id AS sub_category_id,
-        sscs.category_name AS sub_category_name,
-        sscs.id AS sub_sub_category_id,
-        sscs.category_name AS sub_sub_category_name,
-        ROW_NUMBER() OVER (ORDER BY pc.id, scs.id, sscs.id) AS row_num
-    FROM RecursiveCTE rc
-    JOIN products_category pc ON rc.category_id = pc.id
-    JOIN products_sub_category scs ON pc.id = scs.category_id
-    JOIN products_sub_sub_category sscs ON scs.id = sscs.category_id
-)
-
-SELECT
-    jsonb_pretty(jsonb_object_agg(
-        'categories',
-        jsonb_agg(jsonb_build_object(
-            'name', category_name,
-            'subCategories', CASE
-                WHEN sub_category_id IS NOT NULL THEN jsonb_agg(jsonb_build_object(
-                    'name', sub_category_name,
-                    'subSubCategories', CASE
-                        WHEN sub_sub_category_id IS NOT NULL THEN jsonb_agg(sub_sub_category_name)
-                    END
-                ))
-            END
-        ))
-    )) AS result
-FROM RecursiveCTE
-WHERE row_num = 1;
-`.execute(sqlClient);
-
-    // const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
     return {
-      res,
-      // totalCount,
-      // hasMore,
+      categories,
+      totalCount,
+      hasMore,
     };
   }
 
@@ -228,7 +194,7 @@ WHERE row_num = 1;
           const [storeSubCategoryRes] = await db
             .insertInto("products_sub_category")
             .values({
-              category_id: mainCategoryStore.id,
+              main_category_id: mainCategoryStore.id,
               category_name: subCategoryName,
               created_by: userId,
               created_on: now,
@@ -242,9 +208,12 @@ WHERE row_num = 1;
           );
 
           if (subSubCategories && subSubCategories.length > 0) {
-            const subSubCategoryDate = subSubCategories.map((category) => {
+            const subSubCategoryDate: InsertObjectOrList<
+              DB,
+              "products_sub_sub_category"
+            > = subSubCategories.map((category) => {
               return {
-                category_id: storeSubCategoryRes.id,
+                sub_category_id: storeSubCategoryRes.id,
                 category_name: category,
                 created_by: userId,
                 created_on: now,
@@ -296,5 +265,51 @@ WHERE row_num = 1;
     Log.i(`Product has been added successfully! with ID ${response.id}`);
 
     return { isSuccess: true, message: `Product added successfully!` };
+  }
+
+  static transformData(
+    data: {
+      category_name: string;
+      sub_category_name: string | null;
+      sub_sub_category_name: string | null;
+    }[]
+  ) {
+    const result = {
+      categories: [],
+    };
+
+    const groupedCategories = {};
+
+    data.forEach((item) => {
+      const categoryName = item.category_name;
+      const subCategoryName = item.sub_category_name;
+      const subSubCategoryName = item.sub_sub_category_name;
+
+      if (!groupedCategories[categoryName]) {
+        groupedCategories[categoryName] = {
+          name: categoryName,
+          subCategories: [],
+        };
+      }
+
+      const category = groupedCategories[categoryName];
+      const subCategory = category.subCategories.find(
+        (sub) => sub.name === subCategoryName
+      );
+
+      if (!subCategory) {
+        const newSubCategory = { name: subCategoryName, subSubCategories: [] };
+        category.subCategories.push(newSubCategory);
+      }
+
+      if (subSubCategoryName) {
+        const newSubSubCategory = { name: subSubCategoryName };
+        subCategory.subSubCategories.push(subSubCategoryName);
+      }
+    });
+
+    result.categories = Object.values(groupedCategories);
+
+    return result;
   }
 }

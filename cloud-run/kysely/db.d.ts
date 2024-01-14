@@ -36,23 +36,23 @@ export interface ProductsCategory {
 }
 
 export interface ProductsSubCategory {
-  category_id: number | null;
   category_name: string | null;
   created_by: string | null;
   created_on: Timestamp | null;
   id: Generated<number>;
+  main_category_id: number | null;
   modified_by: string | null;
   modified_on: Timestamp | null;
 }
 
 export interface ProductsSubSubCategory {
-  category_id: number | null;
   category_name: string | null;
   created_by: string | null;
   created_on: Timestamp | null;
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Timestamp | null;
+  sub_category_id: number | null;
 }
 
 export interface ProductVendorMap {
