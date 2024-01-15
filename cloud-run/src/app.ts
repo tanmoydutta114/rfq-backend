@@ -14,12 +14,15 @@ import {
   ZRVendorFetchReqBody,
   ZRoleCreateReq,
   ZProductCategoryStoreReq,
+  ZRfqStoreReq,
+  ZRfqsFetchReqBody,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
 import { usersController } from "./controllers/usersController";
 import { vendorsController } from "./controllers/vendorsController";
 import { ZodSchema } from "zod";
+import { rfqController } from "./controllers/rfqController";
 
 const app = express();
 app.use(cors());
@@ -100,6 +103,24 @@ app.post(
     zodValidation: [{ zodSchema: ZRVendorFetchReqBody }],
   }),
   callableWrapper(vendorsController.getVendors)
+);
+
+app.post(
+  "/api/rfq",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqStoreReq }],
+  }),
+  callableWrapper(rfqController.storeNewRfqs)
+);
+
+app.post(
+  "/api/query/rfq",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqsFetchReqBody }],
+  }),
+  callableWrapper(rfqController.getRfqs)
 );
 
 app.post(

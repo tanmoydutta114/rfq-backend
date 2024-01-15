@@ -26,7 +26,7 @@ export class productsSqlOps {
     if (!requestBody.pageNo) {
       requestBody.pageNo = 1;
     }
-    const total_roles = await sqlClient
+    const total_products = await sqlClient
       .selectFrom("products")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
@@ -35,11 +35,11 @@ export class productsSqlOps {
       )
       .select((eb) => eb.fn.countAll<number>().as("total_products"))
       .execute();
-    const totalCount = total_roles[0].total_products;
+    const totalCount = total_products[0].total_products;
 
     const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
 
-    const roles = await sqlClient
+    const products = await sqlClient
       .selectFrom("products")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
@@ -54,7 +54,7 @@ export class productsSqlOps {
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
     return {
-      roles,
+      products,
       totalCount,
       hasMore,
     };

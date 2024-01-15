@@ -24,20 +24,20 @@ export class vendorsSqlOps {
     if (!requestBody.pageNo) {
       requestBody.pageNo = 1;
     }
-    const total_roles = await sqlClient
+    const total_vendors = await sqlClient
       .selectFrom("vendors")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
           eb.or([eb("name", "ilike", `%${requestBody.searchStr}%` as string)])
         )
       )
-      .select((eb) => eb.fn.countAll<number>().as("total_categories"))
+      .select((eb) => eb.fn.countAll<number>().as("total_vendors"))
       .execute();
-    const totalCount = total_roles[0].total_categories;
+    const totalCount = total_vendors[0].total_vendors;
 
     const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
 
-    const roles = await sqlClient
+    const vendors = await sqlClient
       .selectFrom("vendors")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
@@ -52,7 +52,7 @@ export class vendorsSqlOps {
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
     return {
-      roles,
+      vendors,
       totalCount,
       hasMore,
     };
@@ -76,6 +76,7 @@ export class vendorsSqlOps {
           modified_on: now,
           created_by: userId,
           modified_by: userId,
+          address: reqBody.address as any,
         })
         .returning("id")
         .execute();
