@@ -148,6 +148,9 @@ export class productsSqlOps {
         "pc.category_name as category_name",
         "psc.category_name as sub_category_name",
         "pssc.category_name as sub_sub_category_name",
+        "pc.id as main_category_id",
+        "psc.id as sub_category_id",
+        "pssc.id as sub_sub_category_id",
       ])
       .execute();
 
@@ -254,7 +257,7 @@ export class productsSqlOps {
         name: requestBody.name,
         category_id: requestBody.categoryId,
         sub_category: requestBody.subCategoryId,
-        sub_sub_category: requestBody.subCategoryId,
+        sub_sub_category: requestBody.subSubCategoryId,
         created_on: now,
         created_by: userId,
         modified_on: now,
