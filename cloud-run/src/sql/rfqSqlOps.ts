@@ -53,12 +53,17 @@ export class rfqSqlOps {
       .returning("id")
       .execute();
 
-    Log.i(`Data hase been stored in DB ${storeDataRes}`);
+    Log.i(`Data has been stored in DB ${storeDataRes}`);
 
     // TODO : Send the email to all the emails list.
     emailSendList.map((mailBody) => {
       console.log(`Sending email to ${mailBody.vendorEmail}`);
     });
+    return {
+      isSuccess: true,
+      message: `RFQ created successfully`!,
+      emailSendList,
+    };
   }
 
   static async getRfqs(sqlClient: Kysely<DB>, requestBody: IRfqsFetchReqBody) {
