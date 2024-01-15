@@ -1,6 +1,6 @@
 import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
-import { IRfqStoreReq } from "../utils/types";
+import { IRfqStoreReq, IRfqsFetchReqBody } from "../utils/types";
 import { getSQLClient } from "./database";
 import { InsertObjectOrList } from "kysely/dist/cjs/parser/insert-values-parser";
 import { createDate, generateId } from "../utils/utils";
@@ -59,5 +59,51 @@ export class rfqSqlOps {
     emailSendList.map((mailBody) => {
       console.log(`Sending email to ${mailBody.vendorEmail}`);
     });
+  }
+
+  static async getRfqs(sqlClient: Kysely<DB>, requestBody: IRfqsFetchReqBody) {
+    const PAGE_SIZE =
+      requestBody.pageSize ?? Number(process.env.PAGE_SIZE) ?? 40;
+    if (!requestBody.sort) {
+      requestBody.sort = {
+        path: "created_on",
+        direction: "desc",
+      };
+    }
+    if (!requestBody.pageNo) {
+      requestBody.pageNo = 1;
+    }
+    const total_rfqs = await sqlClient
+      .selectFrom("rfqs")
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([eb("rfq_id", "ilike", `%${requestBody.searchStr}%` as string)])
+        )
+      )
+      .select((eb) => eb.fn.countAll<number>().as("total_rfqs"))
+      .execute();
+    const totalCount = total_rfqs[0].total_rfqs;
+
+    const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
+
+    const rfqs = await sqlClient
+      .selectFrom("rfqs")
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([eb("rfq_id", "ilike", `%${requestBody.searchStr}%` as string)])
+        )
+      )
+      .orderBy(requestBody.sort.path, requestBody.sort.direction)
+      .limit(PAGE_SIZE)
+      .offset(OFFSET)
+      .select(["id", "rfq_id", "created_on"])
+      .execute();
+
+    const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
+    return {
+      rfqs,
+      totalCount,
+      hasMore,
+    };
   }
 }

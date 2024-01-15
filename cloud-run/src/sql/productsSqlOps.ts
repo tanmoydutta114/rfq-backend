@@ -307,9 +307,7 @@ export class productsSqlOps {
         subCategory.subSubCategories.push(subSubCategoryName);
       }
     });
-
     result.categories = Object.values(groupedCategories);
-
     return result;
   }
 }

@@ -123,7 +123,7 @@ CREATE TABLE product_vendor_map (
 
 CREATE TABLE rfqs (
     id SERIAL PRIMARY KEY,
-    rfq_id VARCHAR UNIQUE,
+    rfq_id VARCHAR UNIQUE, --rfq -1
     vendor_id INTEGER REFERENCES vendors(id),
     vendor_access_url VARCHAR UNIQUE,
     email_send BOOLEAN,
