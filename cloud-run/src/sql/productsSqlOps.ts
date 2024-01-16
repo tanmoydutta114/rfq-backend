@@ -159,7 +159,7 @@ export class productsSqlOps {
 
     const formattedCategory = this.fromatCategoriesSqlData(categories);
     return {
-      categories: formattedCategory,
+      categories: categories,
       totalCount,
       hasMore,
     };
