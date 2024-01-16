@@ -4,6 +4,7 @@ import {
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
   IProductStoreReq,
+  IProductVendorFetchReqBody,
   IProductsFetchReqBody,
 } from "../utils/types";
 import { productsSqlOps } from "../sql/productsSqlOps";
@@ -46,6 +47,17 @@ export class productsController {
     const response = await productsSqlOps.storeProductCategory(
       sqlCLient,
       userId,
+      reqBody
+    );
+    return response;
+  }
+  static async getProductVendors(req: Request) {
+    const sqlCLient = getSQLClient();
+    const productId = Number(req.params.productId);
+    const reqBody: IProductVendorFetchReqBody = req.body;
+    const response = await productsSqlOps.getProductVendors(
+      sqlCLient,
+      productId,
       reqBody
     );
     return response;

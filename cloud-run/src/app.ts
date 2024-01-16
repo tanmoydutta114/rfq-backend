@@ -16,6 +16,7 @@ import {
   ZProductCategoryStoreReq,
   ZRfqStoreReq,
   ZRfqsFetchReqBody,
+  ZVendorAddProductReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -60,6 +61,16 @@ app.post(
   }),
   callableWrapper(productsController.getProducts)
 );
+
+app.post(
+  "/api/query/products/:productId/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
+  }),
+  callableWrapper(productsController.getProductVendors)
+);
+
 app.post(
   "/api/product",
   ApiUtility.checkUserAuth({}),
@@ -103,6 +114,15 @@ app.post(
     zodValidation: [{ zodSchema: ZRVendorFetchReqBody }],
   }),
   callableWrapper(vendorsController.getVendors)
+);
+
+app.post(
+  "/api/vendors/add-product",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZVendorAddProductReq }],
+  }),
+  callableWrapper(vendorsController.updateProduct)
 );
 
 app.post(

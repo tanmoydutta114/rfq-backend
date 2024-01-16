@@ -81,6 +81,7 @@ export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
 export type IProductCategoriesFetchReqBody = z.infer<
   typeof ZProductsFetchReqBody
 >;
+export type IProductVendorFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
 export type IProductCategoryStoreReq = z.infer<typeof ZProductCategoryStoreReq>;
 export type IProductStoreReq = z.infer<typeof ZProductStoreReq>;
 
@@ -116,9 +117,15 @@ export const ZVenderCreateReq = z.object({
   productCategories: ZCategoryType.array().optional().nullable(),
 });
 
+export const ZVendorAddProductReq = z.object({
+  vendorId: z.number(),
+  productId: z.number(),
+});
+
 export type IRVendorFetchReqBody = z.infer<typeof ZRVendorFetchReqBody>;
 export type IVenderCreateReq = z.infer<typeof ZVenderCreateReq>;
 export type ICategoryType = z.infer<typeof ZCategoryType>;
+export type IVendorAddProductReq = z.infer<typeof ZVendorAddProductReq>;
 
 //users
 export const ZCreateUserReq = z.object({

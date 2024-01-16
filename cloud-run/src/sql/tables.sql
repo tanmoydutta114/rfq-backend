@@ -110,6 +110,9 @@ CREATE TABLE vendor_category_map (
     modified_by TEXT REFERENCES firebase_users(firebase_user_id)
 );
 
+--ALTER TABLE public.product_vendor_map ADD CONSTRAINT product_vendor_map_unique UNIQUE (vendor_id,product_id);
+
+
 CREATE TABLE product_vendor_map (
     id SERIAL PRIMARY KEY,
     vendor_id INTEGER REFERENCES vendors(id),

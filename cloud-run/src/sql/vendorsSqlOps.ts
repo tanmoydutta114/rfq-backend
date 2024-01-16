@@ -4,6 +4,7 @@ import {
   ICategoryType,
   IRVendorFetchReqBody,
   IVenderCreateReq,
+  IVendorAddProductReq,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
 import { Log } from "../utils/Log";
@@ -116,5 +117,30 @@ export class vendorsSqlOps {
       };
     });
     return response;
+  }
+
+  static async addProductToVendor(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    reqBody: IVendorAddProductReq
+  ) {
+    const now = createDate();
+    const [updateRes] = await sqlClient
+      .insertInto("product_vendor_map")
+      .values({
+        product_id: reqBody.productId,
+        vendor_id: reqBody.vendorId,
+        created_by: userId,
+        created_on: now,
+        modified_by: userId,
+        modified_on: now,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Updated successfully! id ${updateRes.id}`);
+    return {
+      isSuccess: true,
+      message: `updated successfully!`,
+    };
   }
 }

@@ -4,6 +4,7 @@ import {
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
   IProductStoreReq,
+  IProductVendorFetchReqBody,
   IProductsFetchReqBody,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
@@ -312,5 +313,63 @@ export class productsSqlOps {
     });
     result.categories = Object.values(groupedCategories);
     return result;
+  }
+  static async getProductVendors(
+    sqlClient: Kysely<DB>,
+    productId: number,
+    requestBody: IProductVendorFetchReqBody
+  ) {
+    const PAGE_SIZE =
+      requestBody.pageSize ?? Number(process.env.PAGE_SIZE) ?? 40;
+
+    if (!requestBody.sort) {
+      requestBody.sort = {
+        path: "created_on",
+        direction: "desc",
+      };
+    }
+    if (!requestBody.pageNo) {
+      requestBody.pageNo = 1;
+    }
+    const total_vendors = await sqlClient
+      .selectFrom("product_vendor_map as pvm")
+      .leftJoin("vendors as v", "pvm.vendor_id", "v.id")
+      .where("pvm.product_id", "=", productId)
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([eb("v.name", "ilike", `%${requestBody.searchStr}%` as string)])
+        )
+      )
+      .select((eb) => eb.fn.countAll<number>().as("total_products"))
+      .execute();
+    const totalCount = total_vendors[0].total_products;
+
+    const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
+
+    const vendors = await sqlClient
+      .selectFrom("product_vendor_map as pvm")
+      .leftJoin("vendors as v", "pvm.vendor_id", "v.id")
+      .where("pvm.product_id", "=", productId)
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([eb("v.name", "ilike", `%${requestBody.searchStr}%` as string)])
+        )
+      )
+      .orderBy("v.created_on", requestBody.sort.direction)
+      .limit(PAGE_SIZE)
+      .offset(OFFSET)
+      .select([
+        "v.id as vendor_id",
+        "v.name as vendor_name",
+        "v.email as vendor_email",
+      ])
+      .execute();
+
+    const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
+    return {
+      vendors,
+      totalCount,
+      hasMore,
+    };
   }
 }
