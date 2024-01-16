@@ -157,8 +157,9 @@ export class productsSqlOps {
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
 
+    const formattedCategory = this.fromatCategoriesSqlData(categories);
     return {
-      categories,
+      categories: formattedCategory,
       totalCount,
       hasMore,
     };
@@ -271,48 +272,62 @@ export class productsSqlOps {
     return { isSuccess: true, message: `Product added successfully!` };
   }
 
-  static transformData(
-    data: {
-      category_name: string;
+  static fromatCategoriesSqlData(
+    inputData: {
+      category_name: string | null;
       sub_category_name: string | null;
       sub_sub_category_name: string | null;
+      main_category_id: number;
+      sub_category_id: number | null;
+      sub_sub_category_id: number | null;
     }[]
   ) {
-    const result = {
-      categories: [],
-    };
+    const organizedData = {};
 
-    const groupedCategories = {};
+    inputData.forEach((item) => {
+      const mainCategoryId = item.main_category_id;
+      const subCategoryId = item.sub_category_id;
+      const subSubCategoryId = item.sub_sub_category_id;
 
-    data.forEach((item) => {
-      const categoryName = item.category_name;
+      const mainCategoryName = item.category_name as string;
       const subCategoryName = item.sub_category_name;
       const subSubCategoryName = item.sub_sub_category_name;
 
-      if (!groupedCategories[categoryName]) {
-        groupedCategories[categoryName] = {
-          name: categoryName,
-          subCategories: [],
+      if (!organizedData[mainCategoryName]) {
+        organizedData[mainCategoryName] = {
+          id: mainCategoryId,
+          name: mainCategoryName,
+          subcategories: [],
         };
       }
 
-      const category = groupedCategories[categoryName];
-      const subCategory = category.subCategories.find(
-        (sub) => sub.name === subCategoryName
+      const mainCategory = organizedData[mainCategoryName];
+
+      if (
+        !mainCategory.subcategories.find(
+          (sub: { id: number; name: string }) => sub.name === subCategoryName
+        )
+      ) {
+        mainCategory.subcategories.push({
+          id: subCategoryId,
+          name: subCategoryName,
+          subSubcategories: [],
+        });
+      }
+
+      const subCategory = mainCategory.subcategories.find(
+        (sub: { id: number; name: string }) => sub.name === subCategoryName
       );
 
-      if (!subCategory) {
-        const newSubCategory = { name: subCategoryName, subSubCategories: [] };
-        category.subCategories.push(newSubCategory);
-      }
-
       if (subSubCategoryName) {
-        const newSubSubCategory = { name: subSubCategoryName };
-        subCategory.subSubCategories.push(subSubCategoryName);
+        subCategory.subSubcategories.push({
+          id: subSubCategoryId,
+          name: subSubCategoryName,
+        });
       }
     });
-    result.categories = Object.values(groupedCategories);
-    return result;
+
+    return Object.values(organizedData);
   }
   static async getProductVendors(
     sqlClient: Kysely<DB>,
