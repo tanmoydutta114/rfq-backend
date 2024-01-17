@@ -18,25 +18,25 @@ export class rfqSqlOps {
     const now = createDate();
 
     const emailSubject = `Request for a quotation`;
-    const emailSendList: { vendorEmail: string; vendorEmailBody: string }[] =
+    const emailSendList: { vendor_email: string; vendorEmailBody: string }[] =
       [];
 
     const rfqData: InsertObjectOrList<DB, "rfqs"> = vendors.map((vendor) => {
       const encodedCode = Buffer.from(
-        `${rfqId}_${vendor.vendorId}_${generateId()}`
+        `${rfqId}_${vendor.vendor_id}_${generateId()}`
       ).toString("base64");
       const uniqueURL = `https://some-base-url/${encodedCode}`;
       // TODO : create the custom email here only
       const vendorEmailBody = email
-        .replace("<vendorName></vendorName>", vendor.vendorName)
+        .replace("<vendorName></vendorName>", vendor.vendor_name)
         .replace("<customLink></customLink>", uniqueURL);
       emailSendList.push({
-        vendorEmail: vendor.vendorEmail,
+        vendor_email: vendor.vendor_email,
         vendorEmailBody: vendorEmailBody,
       });
       return {
         rfq_id: rfqId,
-        vendor_id: vendor.vendorId,
+        vendor_id: vendor.vendor_id,
         email_send: false,
         is_responded: false,
         vendor_access_url: uniqueURL,
@@ -57,7 +57,7 @@ export class rfqSqlOps {
 
     // TODO : Send the email to all the emails list.
     emailSendList.map((mailBody) => {
-      console.log(`Sending email to ${mailBody.vendorEmail}`);
+      console.log(`Sending email to ${mailBody.vendor_email}`);
     });
     return {
       isSuccess: true,

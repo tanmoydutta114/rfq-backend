@@ -161,9 +161,9 @@ export const ZRfqStoreReq = z.object({
   rfqId: z.string(),
   vendors: z
     .object({
-      vendorName: z.string(),
-      vendorId: z.number(),
-      vendorEmail: z.string().email(),
+      vendor_name: z.string(),
+      vendor_id: z.number(),
+      vendor_email: z.string().email(),
     })
     .array(),
   emailBody: z.string(),
