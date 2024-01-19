@@ -157,17 +157,24 @@ export type IUsersDetails = z.infer<typeof ZUsersDetails>;
 
 // RFQ
 
+// export const ZRfqStoreReq = z.object({
+//   rfqId: z.string(),
+//   vendors: z
+//     .object({
+//       vendor_name: z.string(),
+//       vendor_id: z.number(),
+//       vendor_email: z.string().email(),
+//     })
+//     .array(),
+//   emailBody: z.string(),
+// });
+
 export const ZRfqStoreReq = z.object({
   rfqId: z.string(),
-  vendors: z
-    .object({
-      vendor_name: z.string(),
-      vendor_id: z.number(),
-      vendor_email: z.string().email(),
-    })
-    .array(),
-  emailBody: z.string(),
+  description: z.string(),
 });
+
+export const ZRfqProducts = z.number().array();
 
 export const ZRfqsFetchReqBody = z.object({
   sort: z
@@ -182,5 +189,37 @@ export const ZRfqsFetchReqBody = z.object({
   pageSize: z.number().optional().nullable(),
 });
 
+export const ZRfqVendors = z
+  .object({
+    name: z.string(),
+    id: z.number(),
+    email: z.string().email(),
+  })
+  .array();
+
 export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>;
 export type IRfqsFetchReqBody = z.infer<typeof ZRfqsFetchReqBody>;
+export type IRfqProducts = z.infer<typeof ZRfqProducts>;
+export type IRfqVendors = z.infer<typeof ZRfqVendors>;
+
+// Category format data.
+
+const SubSubCategorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+const SubCategorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  subSubcategories: z.array(SubSubCategorySchema),
+});
+
+const MainCategorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  subcategories: z.array(SubCategorySchema),
+});
+
+export const CategoriesDataSchema = z.array(MainCategorySchema);
+export type ICategoriesDataSchema = z.infer<typeof CategoriesDataSchema>;

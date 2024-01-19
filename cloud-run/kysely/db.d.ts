@@ -77,16 +77,35 @@ export interface ProductVendorMap {
   vendor_id: number | null;
 }
 
+export interface RfqProducts {
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  product_id: number | null;
+  rfq_id: string | null;
+}
+
 export interface Rfqs {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
-  email_send: boolean | null;
-  id: Generated<number>;
-  is_responded: boolean | null;
+  description: string | null;
+  is_finished: boolean | null;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
+  rfq_id: string;
+}
+
+export interface RfqVendors {
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  custom_link: string | null;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  product_id: number | null;
   rfq_id: string | null;
-  vendor_access_url: string | null;
   vendor_id: number | null;
 }
 
@@ -144,6 +163,8 @@ export interface DB {
   products_category: ProductsCategory;
   products_sub_category: ProductsSubCategory;
   products_sub_sub_category: ProductsSubSubCategory;
+  rfq_products: RfqProducts;
+  rfq_vendors: RfqVendors;
   rfqs: Rfqs;
   roles: Roles;
   users: Users;

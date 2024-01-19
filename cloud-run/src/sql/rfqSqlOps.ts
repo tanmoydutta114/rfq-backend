@@ -5,6 +5,7 @@ import { getSQLClient } from "./database";
 import { InsertObjectOrList } from "kysely/dist/cjs/parser/insert-values-parser";
 import { createDate, generateId } from "../utils/utils";
 import { Log } from "../utils/Log";
+import { emailController } from "../controllers/emailController";
 
 export class rfqSqlOps {
   static async storeNewRfqs(
@@ -13,56 +14,132 @@ export class rfqSqlOps {
     reqBody: IRfqStoreReq
   ) {
     const rfqId = reqBody.rfqId;
-    const vendors = reqBody.vendors;
-    const email = reqBody.emailBody;
+    const description = reqBody.description;
     const now = createDate();
 
-    const emailSubject = `Request for a quotation`;
-    const emailSendList: { vendor_email: string; vendorEmailBody: string }[] =
-      [];
+    // const emailSubject = `Request for a quotation`;
+    // const emailSendList: { vendor_email: string; vendorEmailBody: string }[] =
+    //   [];
 
-    const rfqData: InsertObjectOrList<DB, "rfqs"> = vendors.map((vendor) => {
-      const encodedCode = Buffer.from(
-        `${rfqId}_${vendor.vendor_id}_${generateId()}`
-      ).toString("base64");
-      const uniqueURL = `https://some-base-url/${encodedCode}`;
-      // TODO : create the custom email here only
-      const vendorEmailBody = email
-        .replace("<vendorName></vendorName>", vendor.vendor_name)
-        .replace("<customLink></customLink>", uniqueURL);
-      emailSendList.push({
-        vendor_email: vendor.vendor_email,
-        vendorEmailBody: vendorEmailBody,
-      });
-      return {
+    // const rfqData: InsertObjectOrList<DB, "rfqs"> = vendors.map((vendor) => {
+    //   const encodedCode = Buffer.from(
+    //     `${rfqId}_${vendor.vendor_id}_${generateId()}`
+    //   ).toString("base64");
+    //   const uniqueURL = `https://some-base-url/${encodedCode}`;
+    //   // TODO : create the custom email here only
+    //   const vendorEmailBody = email
+    //     .replace("&lt;vendorName&gt;&lt;/vendorName&gt", vendor.vendor_name)
+    //     .replace("<customLink></customLink>", uniqueURL);
+    //   emailSendList.push({
+    //     vendor_email: vendor.vendor_email,
+    //     vendorEmailBody: vendorEmailBody,
+    //   });
+    //   return {
+    //     rfq_id: rfqId,
+    //     vendor_id: vendor.vendor_id,
+    //     email_send: false,
+    //     is_responded: false,
+    //     vendor_access_url: uniqueURL,
+    //     created_on: now,
+    //     created_by: userId,
+    //     modified_on: now,
+    //     modified_by: userId,
+    //   };
+    // });
+
+    const [storeDataRes] = await sqlCLient
+      .insertInto("rfqs")
+      .values({
         rfq_id: rfqId,
-        vendor_id: vendor.vendor_id,
-        email_send: false,
-        is_responded: false,
-        vendor_access_url: uniqueURL,
+        description: description,
         created_on: now,
         created_by: userId,
-        modified_on: now,
         modified_by: userId,
-      };
-    });
-
-    const storeDataRes = await sqlCLient
-      .insertInto("rfqs")
-      .values(rfqData)
-      .returning("id")
+        modified_on: now,
+      })
+      .returning("rfq_id")
       .execute();
 
-    Log.i(`Data has been stored in DB ${storeDataRes}`);
+    Log.i(`RFQ successfully stored ${storeDataRes.rfq_id}`);
 
     // TODO : Send the email to all the emails list.
-    emailSendList.map((mailBody) => {
-      console.log(`Sending email to ${mailBody.vendor_email}`);
-    });
+    // const emailPromise = emailSendList.map(async (mailBody) => {
+    //   console.log(`Sending email to ${mailBody.vendor_email}`);
+    //   console.log(mailBody.vendorEmailBody);
+    //   await emailController.sendEmail(mailBody.vendorEmailBody, emailSubject, [
+    //     mailBody.vendor_email,
+    //   ]);
+    // });
+    // await Promise.all(emailPromise);
     return {
       isSuccess: true,
       message: `RFQ created successfully`!,
-      emailSendList,
+    };
+  }
+
+  static async storeRfqProducts(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    rfqId: string,
+    productsIds: number[]
+  ) {
+    const now = createDate();
+    const addRfqProducts = productsIds.map(async (productId) => {
+      await sqlClient
+        .insertInto("rfq_products")
+        .values({
+          rfq_id: rfqId,
+          product_id: productId,
+          created_by: userId,
+          created_on: now,
+          modified_by: userId,
+          modified_on: now,
+        })
+        .execute();
+    });
+    await Promise.all(addRfqProducts);
+    Log.i(`Products added to the RFQ!`);
+    return {
+      iSuccess: true,
+      message: `Products added to the category successfully added!`,
+    };
+  }
+
+  static async storeRfqVendors(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    rfqId: string,
+    productId: number,
+    vendorIds: { name: string; email: string; id: number }[],
+    emailBody: string
+  ) {
+    const now = createDate();
+    const addRfqProducts = vendorIds.map(async (vendor) => {
+      Log.i(`Sending the email to ${vendor.name} (${vendor.email})`);
+      const encodedCode = Buffer.from(
+        `${rfqId}_${vendor.id}_${generateId()}`
+      ).toString("base64");
+      const uniqueURL = `https://some-base-url/${encodedCode}`;
+      await sqlClient
+        .insertInto("rfq_vendors")
+        .values({
+          rfq_id: rfqId,
+          product_id: productId,
+          custom_link: uniqueURL,
+          vendor_id: vendor.id,
+          created_by: userId,
+          created_on: now,
+          modified_by: userId,
+          modified_on: now,
+        })
+        .execute();
+      // TODO : Prepare the email body and send the email using the email controller.
+    });
+    await Promise.all(addRfqProducts);
+    Log.i(`Products added to the RFQ!`);
+    return {
+      iSuccess: true,
+      message: `Products added to the category successfully added!`,
     };
   }
 
@@ -101,7 +178,7 @@ export class rfqSqlOps {
       .orderBy(requestBody.sort.path, requestBody.sort.direction)
       .limit(PAGE_SIZE)
       .offset(OFFSET)
-      .select(["id", "rfq_id", "created_on"])
+      .select(["rfq_id", "is_finished", "created_on"])
       .execute();
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
@@ -111,4 +188,6 @@ export class rfqSqlOps {
       hasMore,
     };
   }
+
+  static async getRfqById(sqlClient: Kysely<DB>, rqfId: number) {}
 }

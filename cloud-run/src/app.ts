@@ -17,6 +17,8 @@ import {
   ZRfqStoreReq,
   ZRfqsFetchReqBody,
   ZVendorAddProductReq,
+  ZRfqProducts,
+  ZRfqVendors,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -132,6 +134,24 @@ app.post(
     zodValidation: [{ zodSchema: ZRfqStoreReq }],
   }),
   callableWrapper(rfqController.storeNewRfqs)
+);
+
+app.post(
+  "/api/rfqs/:rfqId/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqProducts }],
+  }),
+  callableWrapper(rfqController.addRFQProducts)
+);
+
+app.post(
+  "/api/rfqs/:rfqId/products/:productId/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqVendors }],
+  }),
+  callableWrapper(rfqController.addRFVendors)
 );
 
 app.post(

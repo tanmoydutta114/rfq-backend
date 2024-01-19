@@ -125,14 +125,52 @@ CREATE TABLE product_vendor_map (
 
 
 CREATE TABLE rfqs (
-    id SERIAL PRIMARY KEY,
-    rfq_id VARCHAR UNIQUE, --rfq -1
-    vendor_id INTEGER REFERENCES vendors(id),
-    vendor_access_url VARCHAR UNIQUE,
-    email_send BOOLEAN,
-    is_responded BOOLEAN,
+    rfq_id VARCHAR PRIMARY KEY,
+    description TEXT,
+    is_finished BOOLEAN DEFAULT FALSE,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by TEXT REFERENCES firebase_users(firebase_user_id),
     modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_by TEXT REFERENCES firebase_users(firebase_user_id)
 );
+
+CREATE TABLE rfq_products (
+	id SERIAL PRIMARY KEY,
+    rfq_id VARCHAR REFERENCES rfqs(rfq_id),
+    product_id INTEGER REFERENCES products(id),
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+CREATE TABLE rfq_vendors (
+	id SERIAL PRIMARY KEY,
+    rfq_id VARCHAR REFERENCES rfqs(rfq_id),
+    vendor_id INTEGER REFERENCES vendors(id),
+    product_id INTEGER REFERENCES products(id),
+    custom_link VARCHAR;
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+CREATE TABLE rfq_comments (
+    id SERIAL PRIMARY KEY,
+    rfq_id VARCHAR REFERENCES rfqs(rfq_id),
+    vendor_id INTEGER REFERENCES vendors(id),
+    product_id INTEGER REFERENCES products(id),
+    commenter_type SMALLINT, -- 0 ADMIN, 1 VENDOR
+    comment JSONB,
+    file_ref VARCHAR DEFAULT NULL,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT REFERENCES firebase_users(firebase_user_id),
+    modified_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_by TEXT REFERENCES firebase_users(firebase_user_id)
+);
+
+-- Adding a unique constraint for the composite primary key
+ALTER TABLE rfq_comments
+ADD CONSTRAINT unique_rfq_vendor_product
+UNIQUE (rfq_id, vendor_id, product_id);

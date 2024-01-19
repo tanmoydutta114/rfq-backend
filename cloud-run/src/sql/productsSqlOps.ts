@@ -1,6 +1,7 @@
 import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
 import {
+  ICategoriesDataSchema,
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
   IProductStoreReq,
@@ -157,9 +158,10 @@ export class productsSqlOps {
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
 
-    const formattedCategory = this.fromatCategoriesSqlData(categories);
+    const formattedCategory: ICategoriesDataSchema =
+      this.formatCategoriesSqlData(categories);
     return {
-      categories: categories,
+      formattedCategory,
       totalCount,
       hasMore,
     };
@@ -272,7 +274,7 @@ export class productsSqlOps {
     return { isSuccess: true, message: `Product added successfully!` };
   }
 
-  static fromatCategoriesSqlData(
+  static formatCategoriesSqlData(
     inputData: {
       category_name: string | null;
       sub_category_name: string | null;
@@ -281,8 +283,8 @@ export class productsSqlOps {
       sub_category_id: number | null;
       sub_sub_category_id: number | null;
     }[]
-  ) {
-    const organizedData = {};
+  ): ICategoriesDataSchema {
+    let organizedData: ICategoriesDataSchema = {} as ICategoriesDataSchema;
 
     inputData.forEach((item) => {
       const mainCategoryId = item.main_category_id;
@@ -291,6 +293,7 @@ export class productsSqlOps {
 
       const mainCategoryName = item.category_name as string;
       const subCategoryName = item.sub_category_name;
+
       const subSubCategoryName = item.sub_sub_category_name;
 
       if (!organizedData[mainCategoryName]) {

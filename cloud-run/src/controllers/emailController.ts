@@ -33,11 +33,11 @@ export class emailController {
 
     if (utility.ApiUtility.isDev()) {
       to = ["tanmoy.dutta@witbybit.com", "suryadipta@witbybit.com"];
-      from = "tanmoy.dutta@witbybit.com";
+      from = "xepag74986@rentaen.com";
       ccOReply = ["tanmoy.dutta@witbybit.com", "suryadipta@witbybit.com"];
     } else {
       to = ["tanmoy.dutta@witbybit.com"];
-      from = "tanmoy.dutta@witbybit.com";
+      from = "xepag74986@rentaen.com";
       ccOReply = ["tanmoy.dutta@witbybit.com"];
     }
     const client = new postmark.Client(process.env.POSTMARK_ID as string);
