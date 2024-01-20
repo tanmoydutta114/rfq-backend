@@ -163,6 +163,12 @@ app.post(
   }),
   callableWrapper(rfqController.storeComment)
 );
+app.get(
+  "/api/rfqs/:rfqId/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getRfqProducts)
+);
 
 app.post(
   "/api/query/rfq",

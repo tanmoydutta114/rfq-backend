@@ -73,4 +73,11 @@ export class rfqController {
     );
     return response;
   }
+
+  static async getRfqProducts(req: Request) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = await rfqSqlOps.getRfqProducts(sqlCLient, rfqId);
+    return response;
+  }
 }

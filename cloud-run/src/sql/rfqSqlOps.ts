@@ -243,6 +243,19 @@ export class rfqSqlOps {
     };
   }
 
+  static async getRfqProducts(sqlClient: Kysely<DB>, rfqId: string) {
+    const products = await sqlClient
+      .selectFrom("rfq_products as rp")
+      .leftJoin("products as p", "rp.product_id", "p.id")
+      .where("rfq_id", "=", rfqId)
+      .select(["p.id", "p.name"])
+      .execute();
+    return {
+      isSuccess: true,
+      products,
+    };
+  }
+
   static async storeRfqComments(
     sqlClient: Kysely<DB>,
     userId: string,
