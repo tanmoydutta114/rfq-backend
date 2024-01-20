@@ -1,4 +1,6 @@
-import { InsertObject, Kysely } from "kysely";
+import { InsertObject, Kysely, sql } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
+
 import { DB } from "../../kysely/db";
 import {
   IRfqCommentsReq,
@@ -186,14 +188,60 @@ export class rfqSqlOps {
       .execute();
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
+
     return {
       rfqs,
-      totalCount,
       hasMore,
+      isSuccess: true,
     };
   }
 
-  static async getRfqById(sqlClient: Kysely<DB>, rqfId: number) {}
+  static async getRfqById(sqlClient: Kysely<DB>, rqfId: number) {
+    const rfqs = await sql`
+      SELECT
+          rp.product_id,
+          r.rfq_id,
+          jsonb_build_object(
+              'product_id', rp.product_id,
+              'rfq_id', rp.rfq_id,
+              'created_on', rp.created_on,
+              'created_by', rp.created_by,
+              'modified_on', rp.modified_on,
+              'modified_by', rp.modified_by,
+              'vendors', jsonb_agg(jsonb_build_object(
+                  'vendor_id', rv.vendor_id,
+                  'custom_link', rv.custom_link,
+                  'created_on', rv.created_on,
+                  'created_by', rv.created_by,
+                  'modified_on', rv.modified_on,
+                  'modified_by', rv.modified_by
+              ))
+          ) AS product_info,
+          jsonb_build_object(
+              'rfq_id', r.rfq_id,
+              'description', r.description,
+              'is_finished', r.is_finished,
+              'created_on', r.created_on,ß
+              'created_by', r.created_by,
+              'modified_on', r.modified_on,
+              'modified_by', r.modified_by
+          ) AS rfq_info
+      FROM
+          rfq_products rp
+      LEFT JOIN
+          rfq_vendors rv ON rp.product_id = rv.product_id
+      LEFT JOIN
+          rfqs r ON rp.rfq_id = r.rfq_id
+      WHERE
+          rp.rfq_id = ${rqfId}
+      GROUP BY
+          rp.product_id, rp.rfq_id, rp.created_on, rp.created_by, rp.modified_on, rp.modified_by, r.rfq_id;
+    `.execute(sqlClient);
+
+    return {
+      rfqs,
+    };
+  }
 
   static async storeRfqComments(
     sqlClient: Kysely<DB>,
