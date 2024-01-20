@@ -1,6 +1,10 @@
 import { InsertObject, Kysely } from "kysely";
 import { DB } from "../../kysely/db";
-import { IRfqStoreReq, IRfqsFetchReqBody } from "../utils/types";
+import {
+  IRfqCommentsReq,
+  IRfqStoreReq,
+  IRfqsFetchReqBody,
+} from "../utils/types";
 import { getSQLClient } from "./database";
 import { InsertObjectOrList } from "kysely/dist/cjs/parser/insert-values-parser";
 import { createDate, generateId } from "../utils/utils";
@@ -190,4 +194,41 @@ export class rfqSqlOps {
   }
 
   static async getRfqById(sqlClient: Kysely<DB>, rqfId: number) {}
+
+  static async storeRfqComments(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    rqfId: string,
+    productId: number,
+    vendorId: number,
+    reqBody: IRfqCommentsReq
+  ) {
+    const now = createDate();
+    const comment = reqBody.comments;
+    const [storeComment] = await sqlClient
+      .insertInto("rfq_comments")
+      .values({
+        rfq_id: rqfId,
+        product_id: productId,
+        vendor_id: vendorId,
+        comment: JSON.stringify(comment),
+        file_ref: reqBody.fileRef,
+        created_by: userId,
+        created_on: now,
+        modified_by: userId,
+        modified_on: now,
+        commenter_type: reqBody.commenterType,
+      })
+      .returning("id")
+      .execute();
+    Log.i(
+      `${
+        reqBody.commenterType === 0 ? `Admin` : `Vendor`
+      } comment stored successfully!, Id : ${storeComment.id}`
+    );
+    return {
+      isSuccess: true,
+      message: `Comments stored successfully!`,
+    };
+  }
 }

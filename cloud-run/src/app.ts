@@ -19,6 +19,7 @@ import {
   ZVendorAddProductReq,
   ZRfqProducts,
   ZRfqVendors,
+  ZRfqCommentsReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -152,6 +153,15 @@ app.post(
     zodValidation: [{ zodSchema: ZRfqVendors }],
   }),
   callableWrapper(rfqController.addRFVendors)
+);
+
+app.post(
+  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comment",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqCommentsReq }],
+  }),
+  callableWrapper(rfqController.storeComment)
 );
 
 app.post(

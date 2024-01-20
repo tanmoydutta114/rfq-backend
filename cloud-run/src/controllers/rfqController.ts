@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { getSQLClient } from "../sql/database";
 import {
+  IRfqCommentsReq,
   IRfqProducts,
   IRfqStoreReq,
   IRfqVendors,
@@ -52,6 +53,24 @@ export class rfqController {
     const sqlClient = getSQLClient();
     const reqBody: IRfqsFetchReqBody = req.body;
     const response = await rfqSqlOps.getRfqs(sqlClient, reqBody);
+    return response;
+  }
+
+  static async storeComment(req: Request) {
+    const sqlCLient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const rfqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const vendorId = Number(req.params.vendorId);
+    const reqBody: IRfqCommentsReq = req.body;
+    const response = await rfqSqlOps.storeRfqComments(
+      sqlCLient,
+      userId,
+      rfqId,
+      productId,
+      vendorId,
+      reqBody
+    );
     return response;
   }
 }

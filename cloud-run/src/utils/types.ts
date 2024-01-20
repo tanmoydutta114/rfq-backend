@@ -197,10 +197,20 @@ export const ZRfqVendors = z
   })
   .array();
 
+export const ZRfqCommentsReq = z.object({
+  comments: z.object({
+    message: z.string(),
+  }),
+  fileRef: z.number().optional().nullable(),
+  commenterType: z.number(),
+});
+
 export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>;
 export type IRfqsFetchReqBody = z.infer<typeof ZRfqsFetchReqBody>;
 export type IRfqProducts = z.infer<typeof ZRfqProducts>;
 export type IRfqVendors = z.infer<typeof ZRfqVendors>;
+
+export type IRfqCommentsReq = z.infer<typeof ZRfqCommentsReq>;
 
 // Category format data.
 

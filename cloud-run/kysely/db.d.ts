@@ -4,6 +4,8 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
+
 export type Json = ColumnType<JsonValue, string, string>;
 
 export type JsonArray = JsonValue[];
@@ -77,6 +79,20 @@ export interface ProductVendorMap {
   vendor_id: number | null;
 }
 
+export interface RfqComments {
+  comment: Json | null;
+  commenter_type: number | null;
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  file_ref: Int8 | null;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  product_id: number | null;
+  rfq_id: string | null;
+  vendor_id: number | null;
+}
+
 export interface RfqProducts {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
@@ -91,7 +107,7 @@ export interface Rfqs {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   description: string | null;
-  is_finished: boolean | null;
+  is_finished: Generated<boolean | null>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   rfq_id: string;
@@ -163,6 +179,7 @@ export interface DB {
   products_category: ProductsCategory;
   products_sub_category: ProductsSubCategory;
   products_sub_sub_category: ProductsSubSubCategory;
+  rfq_comments: RfqComments;
   rfq_products: RfqProducts;
   rfq_vendors: RfqVendors;
   rfqs: Rfqs;
