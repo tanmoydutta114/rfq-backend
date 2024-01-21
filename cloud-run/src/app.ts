@@ -93,12 +93,22 @@ app.post(
 );
 
 app.post(
-  "/api/product-categories",
+  "/api/main-categories/add",
   ApiUtility.checkUserAuth({}),
-  checkPermissionAndReqSchema({
-    zodValidation: [{ zodSchema: ZProductCategoryStoreReq }],
-  }),
-  callableWrapper(productsController.storeProductCategories)
+  checkPermissionAndReqSchema({}),
+  callableWrapper(productsController.storeProductMainCategories)
+);
+app.post(
+  "/api/main-categories/:mainCategoryId/sub-categories/add",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(productsController.storeProductSubCategories)
+);
+app.post(
+  "/api/sub-categories/:subCategoryId/sub-sub-category/add",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(productsController.storeProductSubSubCategories)
 );
 
 app.post(

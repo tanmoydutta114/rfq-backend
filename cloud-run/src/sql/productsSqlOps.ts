@@ -249,6 +249,81 @@ export class productsSqlOps {
     return response;
   }
 
+  static async storeMainCategory(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    mainCategoryName: string
+  ) {
+    const now = createDate();
+    const storeMainCategoryRes = await sqlClient
+      .insertInto("products_category")
+      .values({
+        category_name: mainCategoryName,
+        created_by: userId,
+        created_on: now,
+        modified_by: userId,
+        modified_on: now,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Category saved successfully!`);
+    return {
+      isSuccess: true,
+      message: `Category saved successfully!`,
+    };
+  }
+
+  static async storeSubCategory(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    mainCategoryId: number,
+    subCategoryName: string
+  ) {
+    const now = createDate();
+    const storeSubCategoryRes = await sqlClient
+      .insertInto("products_sub_category")
+      .values({
+        main_category_id: mainCategoryId,
+        category_name: subCategoryName,
+        created_by: userId,
+        created_on: now,
+        modified_by: userId,
+        modified_on: now,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Sub category saved successfully!`);
+    return {
+      isSuccess: true,
+      message: `Sub category saved successfully!`,
+    };
+  }
+  static async storeSubSubCategory(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    subCategoryId: number,
+    subSubCategoryName: string
+  ) {
+    const now = createDate();
+    const storeSubSubCategoryRes = await sqlClient
+      .insertInto("products_sub_sub_category")
+      .values({
+        sub_category_id: subCategoryId,
+        category_name: subSubCategoryName,
+        created_by: userId,
+        created_on: now,
+        modified_by: userId,
+        modified_on: now,
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Sub sub category saved successfully!`);
+    return {
+      isSuccess: true,
+      message: `Sub sub category saved successfully!`,
+    };
+  }
+
   static async storeProducts(
     sqlClient: Kysely<DB>,
     userId: string,
@@ -308,6 +383,7 @@ export class productsSqlOps {
       const mainCategory = organizedData[mainCategoryName];
 
       if (
+        subCategoryId &&
         !mainCategory.subcategories.find(
           (sub: { id: number; name: string }) => sub.name === subCategoryName
         )
@@ -323,7 +399,7 @@ export class productsSqlOps {
         (sub: { id: number; name: string }) => sub.name === subCategoryName
       );
 
-      if (subSubCategoryName) {
+      if (subSubCategoryId && subSubCategoryName) {
         subCategory.subSubcategories.push({
           id: subSubCategoryId,
           name: subSubCategoryName,

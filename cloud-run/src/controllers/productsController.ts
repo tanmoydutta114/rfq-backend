@@ -40,14 +40,41 @@ export class productsController {
     return response;
   }
 
-  static async storeProductCategories(req: Request) {
+  static async storeProductMainCategories(req: Request) {
     const sqlCLient = getSQLClient();
     const userId = req.user?.uid ?? "";
-    const reqBody: IProductCategoryStoreReq = req.body;
-    const response = await productsSqlOps.storeProductCategory(
+    const reqBody: { name: string } = req.body;
+    const response = await productsSqlOps.storeMainCategory(
       sqlCLient,
       userId,
-      reqBody
+      reqBody.name
+    );
+    return response;
+  }
+  static async storeProductSubCategories(req: Request) {
+    const sqlCLient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const mainCategoryId = Number(req.params.mainCategoryId);
+    const reqBody: { name: string } = req.body;
+
+    const response = await productsSqlOps.storeSubCategory(
+      sqlCLient,
+      userId,
+      mainCategoryId,
+      reqBody.name
+    );
+    return response;
+  }
+  static async storeProductSubSubCategories(req: Request) {
+    const sqlCLient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const subCategoryId = Number(req.params.subCategoryId);
+    const reqBody: { name: string } = req.body;
+    const response = await productsSqlOps.storeSubSubCategory(
+      sqlCLient,
+      userId,
+      subCategoryId,
+      reqBody.name
     );
     return response;
   }
