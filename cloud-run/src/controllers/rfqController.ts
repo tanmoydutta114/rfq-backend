@@ -80,4 +80,18 @@ export class rfqController {
     const response = await rfqSqlOps.getRfqProducts(sqlCLient, rfqId);
     return response;
   }
+
+  static async getComments(req: Request) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const vendorId = Number(req.params.vendorId);
+    const response = await rfqSqlOps.getRfqComments(
+      sqlCLient,
+      rfqId,
+      productId,
+      vendorId
+    );
+    return response;
+  }
 }

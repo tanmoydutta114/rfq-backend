@@ -292,4 +292,23 @@ export class rfqSqlOps {
       message: `Comments stored successfully!`,
     };
   }
+
+  static async getRfqComments(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    productId: number,
+    vendorId: number
+  ) {
+    const comments = await sqlClient
+      .selectFrom("rfq_comments")
+      .where("rfq_id", "=", rfqId)
+      .where("product_id", "=", productId)
+      .where("vendor_id", "=", vendorId)
+      .selectAll()
+      .execute();
+    return {
+      isSuccess: true,
+      comments: comments,
+    };
+  }
 }
