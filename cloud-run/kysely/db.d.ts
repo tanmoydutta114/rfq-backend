@@ -32,6 +32,7 @@ export interface Products {
   category_id: Generated<number | null>;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
+  description: string | null;
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;

@@ -51,7 +51,7 @@ export class productsSqlOps {
       .orderBy(requestBody.sort.path, requestBody.sort.direction)
       .limit(PAGE_SIZE)
       .offset(OFFSET)
-      .select(["id", "name", "created_on"])
+      .select(["id", "name", "created_on", "description"])
       .execute();
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
@@ -259,6 +259,7 @@ export class productsSqlOps {
       .insertInto("products")
       .values({
         name: requestBody.name,
+        description: requestBody.description,
         category_id: requestBody.categoryId,
         sub_category: requestBody.subCategoryId,
         sub_sub_category: requestBody.subSubCategoryId,
