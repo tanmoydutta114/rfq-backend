@@ -114,13 +114,16 @@ export interface Rfqs {
 }
 
 export interface RfqVendors {
+  accept_rfq: Generated<boolean | null>;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   custom_link: string | null;
+  email_sent_on: Timestamp | null;
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   product_id: number | null;
+  responded_on: Timestamp | null;
   rfq_id: string | null;
   vendor_id: number | null;
 }

@@ -116,30 +116,47 @@ export class rfqSqlOps {
     userId: string,
     rfqId: string,
     productId: number,
-    vendorIds: { name: string; email: string; id: number }[],
+    vendorDetails: { name: string; email: string; id: number }[],
     emailBody: string
   ) {
     const now = createDate();
-    const addRfqProducts = vendorIds.map(async (vendor) => {
-      Log.i(`Sending the email to ${vendor.name} (${vendor.email})`);
-      const encodedCode = Buffer.from(
-        `${rfqId}_${vendor.id}_${generateId()}`
-      ).toString("base64");
-      const uniqueURL = `https://some-base-url/${encodedCode}`;
-      await sqlClient
-        .insertInto("rfq_vendors")
-        .values({
-          rfq_id: rfqId,
-          product_id: productId,
-          custom_link: uniqueURL,
-          vendor_id: vendor.id,
-          created_by: userId,
-          created_on: now,
-          modified_by: userId,
-          modified_on: now,
-        })
-        .execute();
-      // TODO : Prepare the email body and send the email using the email controller.
+    const addRfqProducts = vendorDetails.map(async (vendor) => {
+      await sqlClient.transaction().execute(async (transaction) => {
+        Log.i(`Sending the email to ${vendor.name} (${vendor.email})`);
+        const encodedCode = Buffer.from(
+          `${rfqId}_${vendor.id}_${generateId()}`
+        ).toString("base64");
+        const uniqueURL = `https://some-base-url/${encodedCode}`;
+        await transaction
+          .insertInto("rfq_vendors")
+          .values({
+            rfq_id: rfqId,
+            product_id: productId,
+            custom_link: uniqueURL,
+            vendor_id: vendor.id,
+            created_by: userId,
+            created_on: now,
+            modified_by: userId,
+            modified_on: now,
+          })
+          .execute();
+        // TODO : Prepare the email body and send the email using the email controller.
+
+        const vendorEmailBody = emailBody
+          .replace("&lt;vendorName&gt;&lt;/vendorName&gt", vendor.name)
+          .replace("<customLink></customLink>", uniqueURL);
+        // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
+        //   vendor.email,
+        // ]);
+        const updateEmailStatus = await transaction
+          .updateTable("rfq_vendors")
+          .where("rfq_id", "=", rfqId)
+          .where("product_id", "=", productId)
+          .where("vendor_id", "=", vendor.id)
+          .set({ email_sent_on: createDate() })
+          .execute();
+        Log.i(`Vendor Email sent successfully! also status updated!`);
+      });
     });
     await Promise.all(addRfqProducts);
     Log.i(`Products added to the RFQ!`);
@@ -311,4 +328,6 @@ export class rfqSqlOps {
       comments: comments,
     };
   }
+
+  static async sendVendorEmail() {}
 }
