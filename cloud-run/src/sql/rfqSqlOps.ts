@@ -329,5 +329,14 @@ export class rfqSqlOps {
     };
   }
 
-  static async sendVendorEmail() {}
+  static async isRfqExists(sqlClient: Kysely<DB>, rfqId: string) {
+    const isRfqExists = await sqlClient
+      .selectFrom("rfqs")
+      .where("rfq_id", "ilike", rfqId)
+      .execute();
+    if (isRfqExists.length > 0) {
+      return { isRfqIdTaken: true };
+    }
+    return { isRfqIdTaken: true };
+  }
 }

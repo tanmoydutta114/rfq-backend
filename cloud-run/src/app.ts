@@ -197,6 +197,13 @@ app.post(
   callableWrapper(rfqController.getRfqs)
 );
 
+app.get(
+  "/api/rfqs/:rfqId",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.isRfqIdTaken)
+);
+
 app.post(
   "/api/create-user",
   ApiUtility.checkUserAuth({}),

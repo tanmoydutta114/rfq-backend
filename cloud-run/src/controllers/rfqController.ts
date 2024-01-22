@@ -56,6 +56,13 @@ export class rfqController {
     return response;
   }
 
+  static async isRfqIdTaken(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = rfqSqlOps.isRfqExists(sqlClient, rfqId);
+    return response;
+  }
+
   static async storeComment(req: Request) {
     const sqlCLient = getSQLClient();
     const userId = req.user?.uid ?? "";
