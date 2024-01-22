@@ -58,8 +58,8 @@ export class rfqController {
 
   static async isRfqIdTaken(req: Request) {
     const sqlClient = getSQLClient();
-    const rfqId = req.params.rfqId;
-    const response = rfqSqlOps.isRfqExists(sqlClient, rfqId);
+    const rfqId: { rfqId: string } = req.body;
+    const response = rfqSqlOps.isRfqExists(sqlClient, rfqId.rfqId);
     return response;
   }
 

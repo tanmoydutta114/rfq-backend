@@ -197,8 +197,8 @@ app.post(
   callableWrapper(rfqController.getRfqs)
 );
 
-app.get(
-  "/api/rfqs/:rfqId",
+app.post(
+  "/api/query/rfqId",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.isRfqIdTaken)
