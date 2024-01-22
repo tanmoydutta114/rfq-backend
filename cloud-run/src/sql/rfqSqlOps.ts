@@ -337,6 +337,6 @@ export class rfqSqlOps {
     if (isRfqExists.length > 0) {
       return { isRfqIdTaken: true };
     }
-    return { isRfqIdTaken: true };
+    return { isRfqIdTaken: false };
   }
 }
