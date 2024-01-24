@@ -265,7 +265,7 @@ export class rfqSqlOps {
       .selectFrom("rfq_products as rp")
       .leftJoin("products as p", "rp.product_id", "p.id")
       .where("rfq_id", "=", rfqId)
-      .select(["p.id", "p.name"])
+      .select(["p.id", "p.name", "p.description"])
       .execute();
     return {
       isSuccess: true,
