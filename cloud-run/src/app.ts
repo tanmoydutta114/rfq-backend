@@ -21,12 +21,12 @@ import {
   ZRfqVendors,
   ZRfqCommentsReq,
   ZFetchProductsByCategoryId,
+  ZVendorLogin,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
 import { usersController } from "./controllers/usersController";
 import { vendorsController } from "./controllers/vendorsController";
-import { ZodSchema } from "zod";
 import { rfqController } from "./controllers/rfqController";
 import multer from "multer";
 
@@ -142,6 +142,15 @@ app.post(
     zodValidation: [{ zodSchema: ZRVendorFetchReqBody }],
   }),
   callableWrapper(vendorsController.getVendors)
+);
+
+app.post(
+  "/api/vendor/login",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZVendorLogin }],
+  }),
+  callableWrapper(vendorsController.vendorLogin)
 );
 
 app.post(

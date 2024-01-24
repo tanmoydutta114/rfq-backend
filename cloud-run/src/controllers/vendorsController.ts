@@ -4,6 +4,7 @@ import {
   IRVendorFetchReqBody,
   IVenderCreateReq,
   IVendorAddProductReq,
+  IVendorLogin,
 } from "../utils/types";
 import { vendorsSqlOps } from "../sql/vendorsSqlOps";
 
@@ -39,6 +40,13 @@ export class vendorsController {
       userId,
       reqBody
     );
+    return response;
+  }
+
+  static async vendorLogin(req: Request) {
+    const sqlClient = getSQLClient();
+    const reqBody: IVendorLogin = req.body;
+    const response = await vendorsSqlOps.vendorLogin(sqlClient, reqBody);
     return response;
   }
 }

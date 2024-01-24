@@ -123,16 +123,13 @@ export class rfqSqlOps {
     const addRfqProducts = vendorDetails.map(async (vendor) => {
       await sqlClient.transaction().execute(async (transaction) => {
         Log.i(`Sending the email to ${vendor.name} (${vendor.email})`);
-        const encodedCode = Buffer.from(
-          `${rfqId}_${vendor.id}_${generateId()}`
-        ).toString("base64");
-        const uniqueURL = `https://some-base-url/${encodedCode}`;
+        const password = generateId();
         await transaction
           .insertInto("rfq_vendors")
           .values({
             rfq_id: rfqId,
             product_id: productId,
-            custom_link: uniqueURL,
+            passcode: password,
             vendor_id: vendor.id,
             created_by: userId,
             created_on: now,
@@ -144,7 +141,7 @@ export class rfqSqlOps {
 
         const vendorEmailBody = emailBody
           .replace("&lt;vendorName&gt;&lt;/vendorName&gt", vendor.name)
-          .replace("<customLink></customLink>", uniqueURL);
+          .replace("<customLink></customLink>", password);
         // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
         //   vendor.email,
         // ]);

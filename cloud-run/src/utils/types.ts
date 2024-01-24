@@ -259,3 +259,10 @@ export const ZFetchProductsByCategoryId = z.object({
 export type IFetchProductsByCategoryId = z.infer<
   typeof ZFetchProductsByCategoryId
 >;
+
+export const ZVendorLogin = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export type IVendorLogin = z.infer<typeof ZVendorLogin>;

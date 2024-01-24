@@ -5,9 +5,12 @@ import {
   IRVendorFetchReqBody,
   IVenderCreateReq,
   IVendorAddProductReq,
+  IVendorLogin,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
 import { Log } from "../utils/Log";
+import { HttpError } from "../utils/HttpError";
+import { HttpStatusCode } from "../utils/HttpStatusCodes";
 
 export class vendorsSqlOps {
   static async getVendors(
@@ -144,14 +147,35 @@ export class vendorsSqlOps {
     };
   }
 
-  static async vendorLogin(
-    sqlClient: Kysely<DB>,
-    email: string,
-    password: string
-  ) {
-    // const vendorData = await sqlClient
-    //   .selectFrom("vendors")
-    //   .where("email", "=", email)
-    //   .select(["id", "name"]);
+  static async vendorLogin(sqlClient: Kysely<DB>, reqBody: IVendorLogin) {
+    const { email, password } = reqBody;
+
+    const vendorData = await sqlClient
+      .selectFrom("rfq_vendors as rv")
+      .leftJoin("vendors as v", "rv.vendor_id", "v.id")
+      .where("v.email", "=", email)
+      .select(["v.id", "v.name", "rv.passcode", "rv.rfq_id", "rv.product_id"])
+      .execute();
+
+    if (vendorData.length < 1) {
+      throw new HttpError(HttpStatusCode.FORBIDDEN, `User is not Exists!`);
+    }
+
+    if (vendorData[0].passcode !== password) {
+      throw new HttpError(
+        HttpStatusCode.FORBIDDEN,
+        `User email or password wrong!`
+      );
+    }
+
+    return {
+      isSuccess: true,
+      vendorInfo: {
+        name: vendorData[0].name,
+        vendorId: vendorData[0].id,
+        rfqId: vendorData[0].rfq_id,
+        productId: vendorData[0].product_id,
+      },
+    };
   }
 }
