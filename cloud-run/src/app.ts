@@ -27,8 +27,13 @@ import { usersController } from "./controllers/usersController";
 import { vendorsController } from "./controllers/vendorsController";
 import { ZodSchema } from "zod";
 import { rfqController } from "./controllers/rfqController";
+import multer from "multer";
 
 const app = express();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 app.use(cors());
 app.use(express.json());
 
@@ -179,6 +184,22 @@ app.get(
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getComments)
+);
+
+app.post(
+  "/api/rfqs/file-upload",
+  upload.single("file"),
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.storeFile)
+);
+
+app.get(
+  "/api/rfqs/file/:fileId",
+  upload.single("file"),
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  rfqController.downloadFile
 );
 
 app.get(

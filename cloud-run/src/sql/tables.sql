@@ -174,3 +174,11 @@ CREATE TABLE rfq_comments (
 ALTER TABLE rfq_comments
 ADD CONSTRAINT unique_rfq_vendor_product
 UNIQUE (rfq_id, vendor_id, product_id);
+
+-- Adding File storage Table
+CREATE TABLE file_storage (
+	file_id VARCHAR PRIMARY KEY,
+	file_name VARCHAR NOT NULL,
+	file_type VARCHAR NOT NULL,
+	file_data BYTEA NOT NULL
+);

@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import { getSQLClient } from "../sql/database";
 import {
   IRfqCommentsReq,
@@ -8,6 +8,8 @@ import {
   IRfqsFetchReqBody,
 } from "../utils/types";
 import { rfqSqlOps } from "../sql/rfqSqlOps";
+import { HttpError } from "../utils/HttpError";
+import { HttpStatusCode } from "../utils/HttpStatusCodes";
 
 export class rfqController {
   static async storeNewRfqs(req: Request) {
@@ -61,6 +63,45 @@ export class rfqController {
     const rfqId: { rfqId: string } = req.body;
     const response = rfqSqlOps.isRfqExists(sqlClient, rfqId.rfqId);
     return response;
+  }
+
+  static async storeFile(req: Request) {
+    const sqlCLient = getSQLClient();
+    const fileData = req.file;
+
+    if (!fileData) {
+      throw new HttpError(HttpStatusCode.BAD_REQUEST, "File not found");
+    }
+
+    const { originalname, buffer } = fileData;
+    const fileType = originalname.split(".").pop() ?? "";
+
+    // TODO : The file is now need to store in DB
+
+    const response = await rfqSqlOps.storeFile(
+      sqlCLient,
+      originalname,
+      fileType,
+      buffer
+    );
+    return response;
+  }
+
+  static async downloadFile(req: Request, res: Response) {
+    const sqlCLient = getSQLClient();
+    const fileId = req.params.fileId;
+
+    const fileResponse = await rfqSqlOps.getFile(sqlCLient, fileId);
+    res.setHeader(
+      "Content-Type",
+      `application/${fileResponse.fileData.file_type}`
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${fileResponse.fileData.file_name}`
+    );
+
+    res.status(200).send(fileResponse.fileData.file_data);
   }
 
   static async storeComment(req: Request) {

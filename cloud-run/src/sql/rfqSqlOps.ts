@@ -1,6 +1,6 @@
 import { InsertObject, Kysely, sql } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
-
+import { nanoid } from "nanoid";
 import { DB } from "../../kysely/db";
 import {
   IRfqCommentsReq,
@@ -338,5 +338,39 @@ export class rfqSqlOps {
       return { isRfqIdTaken: true };
     }
     return { isRfqIdTaken: false };
+  }
+
+  static async storeFile(
+    sqlClient: Kysely<DB>,
+    fileName: string,
+    fileType: string,
+    fileData: Buffer
+  ) {
+    const generatedId = nanoid();
+    const [storeFile] = await sqlClient
+      .insertInto("file_storage")
+      .values({
+        file_id: generatedId,
+        file_name: fileName,
+        file_type: fileType,
+        file_data: fileData,
+      })
+      .returning("file_id")
+      .execute();
+    Log.i(`File stored successfully!`);
+    return {
+      isSuccess: true,
+      message: "File stored successfully",
+      fileId: storeFile.file_id,
+    };
+  }
+  static async getFile(sqlClient: Kysely<DB>, fileId: string) {
+    const [fileData] = await sqlClient
+      .selectFrom("file_storage")
+      .where("file_id", "=", fileId)
+      .selectAll()
+      .execute();
+    Log.i(`File stored successfully!`);
+    return { isSuccess: true, fileData: fileData };
   }
 }

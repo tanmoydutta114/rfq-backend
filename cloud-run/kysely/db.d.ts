@@ -20,6 +20,13 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface FileStorage {
+  file_data: Buffer;
+  file_id: string;
+  file_name: string;
+  file_type: string;
+}
+
 export interface FirebaseUsers {
   contact_number: string | null;
   created_on: Timestamp | null;
@@ -177,6 +184,7 @@ export interface Vendors {
 }
 
 export interface DB {
+  file_storage: FileStorage;
   firebase_users: FirebaseUsers;
   product_vendor_map: ProductVendorMap;
   products: Products;
