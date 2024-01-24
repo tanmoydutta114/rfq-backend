@@ -370,7 +370,7 @@ export class rfqSqlOps {
       .where("file_id", "=", fileId)
       .selectAll()
       .execute();
-    Log.i(`File stored successfully!`);
+    Log.i(`File download successfully!`);
     return { isSuccess: true, fileData: fileData };
   }
 }

@@ -20,6 +20,7 @@ import {
   ZRfqProducts,
   ZRfqVendors,
   ZRfqCommentsReq,
+  ZFetchProductsByCategoryId,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -86,6 +87,15 @@ app.post(
     zodValidation: [{ zodSchema: ZProductStoreReq }],
   }),
   callableWrapper(productsController.storeProducts)
+);
+
+app.post(
+  "/api/query/product-by-category",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZFetchProductsByCategoryId }],
+  }),
+  callableWrapper(productsController.getProductsByCategoryId)
 );
 
 app.post(

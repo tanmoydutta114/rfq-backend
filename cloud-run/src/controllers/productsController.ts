@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { getSQLClient } from "../sql/database";
 import {
+  IFetchProductsByCategoryId,
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
   IProductStoreReq,
@@ -85,6 +86,16 @@ export class productsController {
     const response = await productsSqlOps.getProductVendors(
       sqlCLient,
       productId,
+      reqBody
+    );
+    return response;
+  }
+
+  static async getProductsByCategoryId(req: Request) {
+    const sqlClient = getSQLClient();
+    const reqBody: IFetchProductsByCategoryId = req.body;
+    const response = await productsSqlOps.getProductByCategory(
+      sqlClient,
       reqBody
     );
     return response;

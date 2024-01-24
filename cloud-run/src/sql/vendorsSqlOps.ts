@@ -143,4 +143,15 @@ export class vendorsSqlOps {
       message: `updated successfully!`,
     };
   }
+
+  static async vendorLogin(
+    sqlClient: Kysely<DB>,
+    email: string,
+    password: string
+  ) {
+    // const vendorData = await sqlClient
+    //   .selectFrom("vendors")
+    //   .where("email", "=", email)
+    //   .select(["id", "name"]);
+  }
 }

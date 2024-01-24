@@ -1,7 +1,9 @@
-import { InsertObject, Kysely } from "kysely";
+import { InsertObject, Kysely, SelectQueryBuilder } from "kysely";
 import { DB } from "../../kysely/db";
 import {
+  CategoryType,
   ICategoriesDataSchema,
+  IFetchProductsByCategoryId,
   IProductCategoriesFetchReqBody,
   IProductCategoryStoreReq,
   IProductStoreReq,
@@ -465,6 +467,33 @@ export class productsSqlOps {
       vendors,
       totalCount,
       hasMore,
+    };
+  }
+
+  static async getProductByCategory(
+    sqlClient: Kysely<DB>,
+    reqBody: IFetchProductsByCategoryId
+  ) {
+    const products = await sqlClient
+      .selectFrom("products")
+      .$if(reqBody.categoryType === CategoryType.MainCategory, (qb) =>
+        qb.where((eb) => eb.or([eb("category_id", "=", reqBody.categoryId)]))
+      )
+      .$if(reqBody.categoryType === CategoryType.SubCategory, (qb) =>
+        qb.where((eb) => eb.or([eb("sub_category", "=", reqBody.categoryId)]))
+      )
+      .$if(reqBody.categoryType === CategoryType.SubSubCategory, (qb) =>
+        qb.where((eb) =>
+          eb.or([eb("sub_sub_category", "=", reqBody.categoryId)])
+        )
+      )
+      .select(["name", "description", "created_on"])
+      .orderBy("created_on desc")
+      .execute();
+
+    return {
+      isSuccess: true,
+      products,
     };
   }
 }

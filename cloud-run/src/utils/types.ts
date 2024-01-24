@@ -234,3 +234,28 @@ const MainCategorySchema = z.object({
 
 export const CategoriesDataSchema = z.array(MainCategorySchema);
 export type ICategoriesDataSchema = z.infer<typeof CategoriesDataSchema>;
+
+export enum CategoryType {
+  MainCategory = "main-category",
+  SubCategory = "sub-category",
+  SubSubCategory = "sub-sub-category",
+}
+
+export const ZFetchProductsByCategoryId = z.object({
+  sort: z
+    .object({
+      path: z.enum(["created_on", "modified_on"]),
+      direction: z.enum(["asc", "desc"]).optional(),
+    })
+    .optional()
+    .nullable(),
+  pageNo: z.number().optional().nullable(),
+  searchStr: z.string().optional().nullable(),
+  pageSize: z.number().optional().nullable(),
+  categoryType: z.nativeEnum(CategoryType),
+  categoryId: z.number(),
+});
+
+export type IFetchProductsByCategoryId = z.infer<
+  typeof ZFetchProductsByCategoryId
+>;
