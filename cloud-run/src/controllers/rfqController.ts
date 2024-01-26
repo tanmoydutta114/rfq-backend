@@ -128,6 +128,15 @@ export class rfqController {
     const response = await rfqSqlOps.getRfqProducts(sqlCLient, rfqId);
     return response;
   }
+  static async getRFQAddProductsDropdown(req: Request) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = await rfqSqlOps.getRFQAddProductsDropdown(
+      sqlCLient,
+      rfqId
+    );
+    return response;
+  }
 
   static async getComments(req: Request) {
     const sqlCLient = getSQLClient();

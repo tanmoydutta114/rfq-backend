@@ -181,6 +181,15 @@ app.post(
 );
 
 app.post(
+  "/api/rfqs/:rfqId/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZRfqProducts }],
+  }),
+  callableWrapper(rfqController.addRFQProducts)
+);
+
+app.post(
   "/api/rfqs/:rfqId/products/:productId/vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
@@ -235,6 +244,13 @@ app.get(
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getRfqProducts)
+);
+
+app.get(
+  "/api/rfqs/:rfqId/products-dropdown",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getRFQAddProductsDropdown)
 );
 
 app.post(

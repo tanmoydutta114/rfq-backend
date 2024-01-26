@@ -13,6 +13,7 @@ import { InsertObjectOrList } from "kysely/dist/cjs/parser/insert-values-parser"
 import { createDate, generateId } from "../utils/utils";
 import { Log } from "../utils/Log";
 import { emailController } from "../controllers/emailController";
+import { productsSqlOps } from "./productsSqlOps";
 
 export class rfqSqlOps {
   static async storeNewRfqs(
@@ -390,6 +391,37 @@ export class rfqSqlOps {
     return {
       isSuccess: true,
       vendors,
+    };
+  }
+
+  static async getRFQAddProductsDropdown(
+    sqlClient: Kysely<DB>,
+    refqId: string
+  ) {
+    const allProducts = await sqlClient
+      .selectFrom("products")
+      .select(["id", "name"])
+      .execute();
+    const allRFQProducts = await sqlClient
+      .selectFrom("rfq_products")
+      .where("rfq_id", "=", refqId)
+      .select(["product_id"])
+      .execute();
+    const rfqAlreadyIncludedProductIds = allRFQProducts.map(
+      (product) => product.product_id
+    );
+
+    const products: { id: number; name: string | null }[] = [];
+
+    allProducts.forEach((product) => {
+      if (!rfqAlreadyIncludedProductIds.includes(product.id)) {
+        products.push(product);
+      }
+    });
+
+    return {
+      isSuccess: true,
+      products,
     };
   }
 }
