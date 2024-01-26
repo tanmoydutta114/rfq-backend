@@ -5,6 +5,7 @@ import { DB } from "../../kysely/db";
 import {
   IRfqCommentsReq,
   IRfqStoreReq,
+  IRfqVendors,
   IRfqsFetchReqBody,
 } from "../utils/types";
 import { getSQLClient } from "./database";
@@ -116,7 +117,11 @@ export class rfqSqlOps {
     userId: string,
     rfqId: string,
     productId: number,
-    vendorDetails: { name: string; email: string; id: number }[],
+    vendorDetails: {
+      name: string;
+      id: number;
+      email: string;
+    }[],
     emailBody: string
   ) {
     const now = createDate();

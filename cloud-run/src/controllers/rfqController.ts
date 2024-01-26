@@ -45,8 +45,8 @@ export class rfqController {
       userId,
       rfqId,
       productId,
-      reqBody,
-      ""
+      reqBody.vendors,
+      reqBody.emailBody
     );
     return response;
   }

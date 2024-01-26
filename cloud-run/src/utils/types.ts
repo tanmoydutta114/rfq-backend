@@ -190,13 +190,16 @@ export const ZRfqsFetchReqBody = z.object({
   pageSize: z.number().optional().nullable(),
 });
 
-export const ZRfqVendors = z
-  .object({
-    name: z.string(),
-    id: z.number(),
-    email: z.string().email(),
-  })
-  .array();
+export const ZRfqVendors = z.object({
+  vendors: z
+    .object({
+      name: z.string(),
+      id: z.number(),
+      email: z.string().email(),
+    })
+    .array(),
+  emailBody: z.string(),
+});
 
 export const ZRfqCommentsReq = z.object({
   comments: z.object({
