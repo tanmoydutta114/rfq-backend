@@ -142,4 +142,16 @@ export class rfqController {
     );
     return response;
   }
+
+  static async getRfqProductWiseVendors(req: Request) {
+    const sqlCLient = getSQLClient();
+    const refqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const response = await rfqSqlOps.getRfqProductWiseVendors(
+      sqlCLient,
+      refqId,
+      productId
+    );
+    return response;
+  }
 }

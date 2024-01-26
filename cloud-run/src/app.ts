@@ -189,6 +189,15 @@ app.post(
   callableWrapper(rfqController.addRFVendors)
 );
 
+app.get(
+  "/api/rfqs/:rfqId/products/:productId/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    expectedProps: { params: ["rfqId", "productId"] },
+  }),
+  callableWrapper(rfqController.getRfqProductWiseVendors)
+);
+
 app.post(
   "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comment",
   ApiUtility.checkUserAuth({}),

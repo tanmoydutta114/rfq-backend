@@ -370,4 +370,21 @@ export class rfqSqlOps {
     Log.i(`File download successfully!`);
     return { isSuccess: true, fileData: fileData };
   }
+
+  static async getRfqProductWiseVendors(
+    sqlClient: Kysely<DB>,
+    refqId: string,
+    productId: number
+  ) {
+    const vendors = await sqlClient
+      .selectFrom("rfq_vendors")
+      .where("rfq_id", "=", refqId)
+      .where("product_id", "=", productId)
+      .selectAll()
+      .execute();
+    return {
+      isSuccess: true,
+      vendors,
+    };
+  }
 }
