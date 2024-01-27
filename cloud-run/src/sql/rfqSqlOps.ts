@@ -383,11 +383,18 @@ export class rfqSqlOps {
     productId: number
   ) {
     const vendors = await sqlClient
-      .selectFrom("rfq_vendors")
-      .where("rfq_id", "=", refqId)
-      .where("product_id", "=", productId)
-      .selectAll()
-      .execute();
+      .selectFrom("rfq_vendors as rv")
+      .leftJoin("vendors as v", "rv.vendor_id", "v.id")
+      .where("rv.rfq_id", "=", refqId)
+      .where("rv.product_id", "=", productId)
+      .select([
+        "v.name as vendor_name",
+        "v.id",
+        "v.email",
+        "v.created_on",
+        "v.address",
+      ])
+      .execute(); // Vendor Name needed
     return {
       isSuccess: true,
       vendors,
