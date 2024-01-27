@@ -380,13 +380,13 @@ export class rfqSqlOps {
 
   static async getRfqProductWiseVendors(
     sqlClient: Kysely<DB>,
-    refqId: string,
+    rfqId: string,
     productId: number
   ) {
     const vendors = await sqlClient
       .selectFrom("rfq_vendors as rv")
       .leftJoin("vendors as v", "rv.vendor_id", "v.id")
-      .where("rv.rfq_id", "=", refqId)
+      .where("rv.rfq_id", "=", rfqId)
       .where("rv.product_id", "=", productId)
       .select([
         "v.name as vendor_name",
@@ -430,6 +430,38 @@ export class rfqSqlOps {
     return {
       isSuccess: true,
       products,
+    };
+  }
+
+  static async getVendorByProductIdWhomMailNotYetSent(
+    sqlClient: Kysely<DB>,
+    productId: number,
+    rfqId: string
+  ) {
+    const vendorDetails = await sqlClient
+      .selectFrom("rfq_vendors")
+      .where("product_id", "=", productId)
+      .where("rfq_id", "=", rfqId)
+      .select("vendor_id")
+      .execute();
+    const vendorIdsMailAlreadySent = vendorDetails.map(
+      (vendor) => vendor.vendor_id
+    );
+
+    const vendors = await sqlClient
+      .selectFrom("product_vendor_map as pvm")
+      .leftJoin("vendors as v", "pvm.vendor_id", "v.id")
+      .where("pvm.product_id", "=", productId)
+      .where("pvm.vendor_id", "not in", vendorIdsMailAlreadySent)
+      .select([
+        "v.id as vendor_id",
+        "v.name as vendor_name",
+        "v.email as vendor_email",
+      ])
+      .execute();
+    return {
+      isSuccess: true,
+      vendors,
     };
   }
 }

@@ -163,4 +163,16 @@ export class rfqController {
     );
     return response;
   }
+
+  static async getProductVendorsWhomEmailNotSent(req: Request) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const response = await rfqSqlOps.getVendorByProductIdWhomMailNotYetSent(
+      sqlCLient,
+      productId,
+      rfqId
+    );
+    return response;
+  }
 }

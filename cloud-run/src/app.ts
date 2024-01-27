@@ -207,6 +207,15 @@ app.get(
   callableWrapper(rfqController.getRfqProductWiseVendors)
 );
 
+app.get(
+  "/api/rfqs/:rfqId/products/:productId/vendors-dropdown",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    expectedProps: { params: ["rfqId", "productId"] },
+  }),
+  callableWrapper(rfqController.getProductVendorsWhomEmailNotSent)
+);
+
 app.post(
   "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comment",
   ApiUtility.checkUserAuth({}),
