@@ -146,8 +146,8 @@ export class rfqSqlOps {
         // TODO : Prepare the email body and send the email using the email controller.
 
         const vendorEmailBody = emailBody
-          .replace("&lt;vendorName&gt;&lt;/vendorName&gt", vendor.name)
-          .replace("<customLink></customLink>", password);
+          .replace("&lt;vendorName&gt;&lt;/vendorName&gt;", vendor.name)
+          .replace("&lt;password&gt;&lt;/password&gt;", password);
         // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
         //   vendor.email,
         // ]);
@@ -159,6 +159,7 @@ export class rfqSqlOps {
           .set({ email_sent_on: createDate() })
           .execute();
         Log.i(`Vendor Email sent successfully! also status updated!`);
+        console.log(vendorEmailBody);
       });
     });
     await Promise.all(addRfqProducts);
