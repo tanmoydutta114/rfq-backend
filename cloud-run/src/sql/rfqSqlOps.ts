@@ -321,11 +321,13 @@ export class rfqSqlOps {
     vendorId: number
   ) {
     const comments = await sqlClient
-      .selectFrom("rfq_comments")
+      .selectFrom("rfq_comments as rc")
+      .leftJoin("vendors as v", "rc.vendor_id", "v.id")
       .where("rfq_id", "=", rfqId)
       .where("product_id", "=", productId)
       .where("vendor_id", "=", vendorId)
-      .selectAll()
+      .selectAll("rc")
+      .select(["v.name"])
       .execute();
     return {
       isSuccess: true,
