@@ -52,8 +52,9 @@ export class ApiUtility {
   // Set user type in the custom claims for firebase users.
   static checkUserAuth(params) {
     return async (req: Request, res: Response, next: NextFunction) => {
-      const isTestMode = this.isDev();
+      const isTestMode = process.env.RUN_MODE ?? false;
       const accessType = params?.accessType;
+      console.log(params?.accessType);
       Log.i(`Checking authentication for ${req.url}`);
       try {
         if (isTestMode) {
@@ -62,7 +63,7 @@ export class ApiUtility {
             email: process.env.TEST_EMAIL,
           };
           req.claims = { ut: "a" };
-        } else {
+        } else if (params?.accessType !== "external") {
           const authHeader = req.headers["authorization"] as string;
           let authToken: string;
           if (authHeader?.split(" ")[0] === "Bearer") {
@@ -73,7 +74,10 @@ export class ApiUtility {
               email: decodedToken.email,
               name: decodedToken.name,
             };
+            req.claims = { ut: "a" };
           }
+        } else {
+          req.claims = { ut: "e" };
         }
         if (params?.accessType === "admin" && req.claims.ut !== "a") {
           Log.e(` checkUserAuth failed.`, null);
@@ -81,10 +85,10 @@ export class ApiUtility {
             .status(HttpStatusCode.UNAUTHORIZED)
             .send(`Access not allowed user type is not admin.`);
         }
-        if (req.claims.ut === "a") {
+        if (req.claims?.ut === "a") {
           Log.i(`Logged in as admin`);
         } else {
-          Log.i(`Logged in as employee`);
+          Log.i(`Logged in as external`);
         }
         next();
       } catch (err) {

@@ -218,7 +218,7 @@ app.get(
 
 app.post(
   "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comment",
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqCommentsReq }],
   }),
@@ -227,7 +227,7 @@ app.post(
 
 app.get(
   "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comments",
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getComments)
 );

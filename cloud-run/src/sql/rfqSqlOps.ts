@@ -448,11 +448,15 @@ export class rfqSqlOps {
       (vendor) => vendor.vendor_id
     );
 
+    console.log(vendorIdsMailAlreadySent);
+
     const vendors = await sqlClient
       .selectFrom("product_vendor_map as pvm")
       .leftJoin("vendors as v", "pvm.vendor_id", "v.id")
       .where("pvm.product_id", "=", productId)
-      .where("pvm.vendor_id", "not in", vendorIdsMailAlreadySent)
+      .$if(vendorIdsMailAlreadySent.length > 0, (eb) =>
+        eb.where("pvm.vendor_id", "not in", vendorIdsMailAlreadySent)
+      )
       .select([
         "v.id as vendor_id",
         "v.name as vendor_name",
