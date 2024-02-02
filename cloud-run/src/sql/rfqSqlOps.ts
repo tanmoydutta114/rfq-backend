@@ -370,6 +370,15 @@ export class rfqSqlOps {
       fileId: storeFile.file_id,
     };
   }
+
+  static async deleteFile(sqlClient: Kysely<DB>, fileId: string) {
+    await sqlClient
+      .deleteFrom("file_storage")
+      .where("file_id", "=", fileId)
+      .execute();
+    return { isSuccess: true, message: `File deleted successful!` };
+  }
+
   static async getFile(sqlClient: Kysely<DB>, fileId: string) {
     const [fileData] = await sqlClient
       .selectFrom("file_storage")

@@ -87,6 +87,14 @@ export class rfqController {
     return response;
   }
 
+  static async deleteFile(req: Request) {
+    const sqlCLient = getSQLClient();
+    const fileId: string = req.params.fileId;
+
+    const response = await rfqSqlOps.deleteFile(sqlCLient, fileId);
+    return response;
+  }
+
   static async downloadFile(req: Request, res: Response) {
     const sqlCLient = getSQLClient();
     const fileId = req.params.fileId;

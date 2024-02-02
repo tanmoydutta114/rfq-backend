@@ -248,6 +248,12 @@ app.get(
   rfqController.downloadFile
 );
 
+app.delete(
+  "/api/rfqs/file/:fileId",
+  ApiUtility.checkUserAuth({}),
+  callableWrapper(rfqController.deleteFile)
+);
+
 app.get(
   "/api/rfqs/:rfqId/products",
   ApiUtility.checkUserAuth({}),
