@@ -45,6 +45,12 @@ app.get("/", (req, res) => {
 });
 
 app.post(
+  "/api/get-user",
+  ApiUtility.checkUserAuth({}),
+  callableWrapper(usersController.getUser)
+);
+
+app.post(
   "/api/query/roles",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({

@@ -10,6 +10,12 @@ import { Log } from "../utils/Log";
 import { usersSqlOps } from "../sql/usersSqlOps";
 
 export class usersController {
+  static async getUser(req: Request) {
+    const sqlClient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const userInfo = await usersSqlOps.getUserDetails(sqlClient, userId);
+  }
+
   static async createUser(req: Request) {
     const sqlClient = getSQLClient();
     const userId = req.user?.uid ?? "";

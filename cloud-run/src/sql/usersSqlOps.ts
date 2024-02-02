@@ -53,4 +53,16 @@ export class usersSqlOps {
       message: ` User added successfully!, with id : ${response.id}`,
     };
   }
+
+  static async getUserDetails(sqlClient: Kysely<DB>, userId: string) {
+    const userInfo = await sqlClient
+      .selectFrom("users")
+      .where("firebase_user_id", "=", userId)
+      .select(["name", "email", "id"])
+      .execute();
+    if (userInfo.length > 0) {
+      return { isSuccess: false, userInfo: null };
+    }
+    return { isSuccess: true, useInfo: userInfo[0] };
+  }
 }
