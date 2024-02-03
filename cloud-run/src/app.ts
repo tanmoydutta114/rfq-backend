@@ -22,6 +22,7 @@ import {
   ZRfqCommentsReq,
   ZFetchProductsByCategoryId,
   ZVendorLogin,
+  ZBradsCreateReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -29,6 +30,7 @@ import { usersController } from "./controllers/usersController";
 import { vendorsController } from "./controllers/vendorsController";
 import { rfqController } from "./controllers/rfqController";
 import multer from "multer";
+import { brandController } from "./controllers/brandController";
 
 const app = express();
 
@@ -297,6 +299,17 @@ app.post(
     zodValidation: [{ zodSchema: ZCreateUserReq }],
   }),
   callableWrapper(usersController.createUser)
+);
+
+// ========================= BRANDS =============================
+
+app.post(
+  "/api/brands",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZBradsCreateReq }],
+  }),
+  callableWrapper(brandController.createBrand)
 );
 
 function checkPermissionAndReqSchema<T>(params: ICheckPermSchemaParams) {

@@ -20,6 +20,16 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Brands {
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  description: string | null;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  name: string | null;
+}
+
 export interface FileStorage {
   file_data: Buffer;
   file_id: string;
@@ -36,6 +46,7 @@ export interface FirebaseUsers {
 }
 
 export interface Products {
+  brand_id: number | null;
   category_id: Generated<number | null>;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
@@ -145,6 +156,17 @@ export interface Roles {
   role_name: string | null;
 }
 
+export interface SubProducts {
+  created_by: string | null;
+  created_on: Generated<Timestamp | null>;
+  description: string | null;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Generated<Timestamp | null>;
+  name: string | null;
+  product_id: number | null;
+}
+
 export interface Users {
   contact_no: string | null;
   created_by: string | null;
@@ -184,6 +206,7 @@ export interface Vendors {
 }
 
 export interface DB {
+  brands: Brands;
   file_storage: FileStorage;
   firebase_users: FirebaseUsers;
   product_vendor_map: ProductVendorMap;
@@ -196,6 +219,7 @@ export interface DB {
   rfq_vendors: RfqVendors;
   rfqs: Rfqs;
   roles: Roles;
+  sub_products: SubProducts;
   users: Users;
   vendor_category_map: VendorCategoryMap;
   vendors: Vendors;

@@ -269,3 +269,21 @@ export const ZVendorLogin = z.object({
 });
 
 export type IVendorLogin = z.infer<typeof ZVendorLogin>;
+
+// Brands
+
+export const ZBradsCreateReq = z.object({
+  brandName: z.string(),
+  brandDesc: z.string(),
+  productName: z.string(),
+  productDesc: z.string(),
+  subProducts: z
+    .object({
+      name: z.string(),
+      desc: z.string(),
+    })
+    .array()
+    .optional()
+    .nullable(),
+});
+export type IBradsCreateReq = z.infer<typeof ZBradsCreateReq>;
