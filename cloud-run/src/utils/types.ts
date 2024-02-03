@@ -73,9 +73,10 @@ export const ZProductCategoryStoreReq = z.object({
 export const ZProductStoreReq = z.object({
   name: z.string(),
   description: z.string().optional().nullable(),
-  categoryId: z.number(),
+  categoryId: z.number().nullable(),
   subCategoryId: z.number().optional().nullable(),
   subSubCategoryId: z.number().optional().nullable(),
+  brandId: z.number(),
 });
 
 export type IProductsFetchReqBody = z.infer<typeof ZProductsFetchReqBody>;
@@ -287,3 +288,11 @@ export const ZBradsCreateReq = z.object({
     .nullable(),
 });
 export type IBradsCreateReq = z.infer<typeof ZBradsCreateReq>;
+
+export const ZSubProductStore = z
+  .object({
+    name: z.string(),
+    desc: z.string(),
+  })
+  .array();
+export type ISubProductStore = z.infer<typeof ZSubProductStore>;

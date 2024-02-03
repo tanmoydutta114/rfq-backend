@@ -7,6 +7,7 @@ import {
   IProductStoreReq,
   IProductVendorFetchReqBody,
   IProductsFetchReqBody,
+  ISubProductStore,
 } from "../utils/types";
 import { productsSqlOps } from "../sql/productsSqlOps";
 
@@ -26,6 +27,20 @@ export class productsController {
     const response = await productsSqlOps.storeProducts(
       sqlClient,
       userId,
+      reqBody
+    );
+    return response;
+  }
+  static async storeSubProducts(req: Request) {
+    const sqlClient = getSQLClient();
+    const userId = req.user?.uid ?? "";
+    const productId = Number(req.params.productId);
+    const reqBody: ISubProductStore = req.body;
+
+    const response = await productsSqlOps.storeSubProducts(
+      sqlClient,
+      userId,
+      productId,
       reqBody
     );
     return response;

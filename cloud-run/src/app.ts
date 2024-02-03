@@ -23,6 +23,7 @@ import {
   ZFetchProductsByCategoryId,
   ZVendorLogin,
   ZBradsCreateReq,
+  ZSubProductStore,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -95,6 +96,14 @@ app.post(
     zodValidation: [{ zodSchema: ZProductStoreReq }],
   }),
   callableWrapper(productsController.storeProducts)
+);
+app.post(
+  "/api/products/:productId/sub-product",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZSubProductStore }],
+  }),
+  callableWrapper(productsController.storeSubProducts)
 );
 
 app.post(

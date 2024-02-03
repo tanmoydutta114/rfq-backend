@@ -9,6 +9,7 @@ import {
   IProductStoreReq,
   IProductVendorFetchReqBody,
   IProductsFetchReqBody,
+  ISubProductStore,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
 import { Log } from "../utils/Log";
@@ -340,6 +341,7 @@ export class productsSqlOps {
         category_id: requestBody.categoryId,
         sub_category: requestBody.subCategoryId,
         sub_sub_category: requestBody.subSubCategoryId,
+        brand_id: requestBody.brandId,
         created_on: now,
         created_by: userId,
         modified_on: now,
@@ -494,6 +496,37 @@ export class productsSqlOps {
     return {
       isSuccess: true,
       products,
+    };
+  }
+
+  static async storeSubProducts(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    productId: number,
+    reqBody: ISubProductStore
+  ) {
+    const now = createDate();
+    const subProducts = reqBody.map((subProduct) => {
+      const data: InsertObject<DB, "sub_products"> = {
+        name: subProduct.name,
+        description: subProduct.desc,
+        product_id: productId,
+        created_on: now,
+        created_by: userId,
+        modified_by: userId,
+        modified_on: now,
+      };
+      return data;
+    });
+    const storeSubProducts = await sqlClient
+      .insertInto("sub_products")
+      .values(subProducts)
+      .returning("id")
+      .execute();
+    Log.i(`Sub Products add successfully!`, storeSubProducts);
+    return {
+      isSuccess: true,
+      message: `Sub product added successfully!`,
     };
   }
 }
