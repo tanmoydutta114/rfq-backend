@@ -27,7 +27,7 @@ export interface Brands {
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
-  name: string | null;
+  name: string;
 }
 
 export interface FileStorage {
@@ -54,7 +54,7 @@ export interface Products {
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
-  name: string | null;
+  name: string;
   sub_category: number | null;
   sub_sub_category: number | null;
 }
@@ -163,8 +163,8 @@ export interface SubProducts {
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
-  name: string | null;
-  product_id: number | null;
+  name: string;
+  product_id: number;
 }
 
 export interface Users {

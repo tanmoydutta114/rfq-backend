@@ -125,6 +125,15 @@ app.post(
 );
 
 app.post(
+  "/api/query/product-brands",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
+  }),
+  callableWrapper(productsController.getProductBrands)
+);
+
+app.post(
   "/api/main-categories/add",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),

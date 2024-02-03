@@ -56,6 +56,13 @@ export class productsController {
     return response;
   }
 
+  static async getProductBrands(req: Request) {
+    const sqlCLient = getSQLClient();
+    const reqBody: IProductCategoriesFetchReqBody = req.body;
+    const response = await productsSqlOps.getProductBrands(sqlCLient, reqBody);
+    return response;
+  }
+
   static async storeProductMainCategories(req: Request) {
     const sqlCLient = getSQLClient();
     const userId = req.user?.uid ?? "";

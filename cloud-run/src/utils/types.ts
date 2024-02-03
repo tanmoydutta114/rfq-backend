@@ -227,13 +227,13 @@ const SubSubCategorySchema = z.object({
 const SubCategorySchema = z.object({
   id: z.number(),
   name: z.string(),
-  subSubcategories: z.array(SubSubCategorySchema),
+  subProducts: z.array(SubSubCategorySchema),
 });
 
 const MainCategorySchema = z.object({
   id: z.number(),
   name: z.string(),
-  subcategories: z.array(SubCategorySchema),
+  products: z.array(SubCategorySchema),
 });
 
 export const CategoriesDataSchema = z.array(MainCategorySchema);

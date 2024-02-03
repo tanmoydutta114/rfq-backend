@@ -529,4 +529,134 @@ export class productsSqlOps {
       message: `Sub product added successfully!`,
     };
   }
+
+  static formatBrandProductsSqlData(
+    inputData: {
+      brand_name: string;
+      product_name: string | null;
+      sub_product_name: string | null;
+      brand_id: number;
+      product_id: number | null;
+      sub_product_id: number | null;
+    }[]
+  ): ICategoriesDataSchema {
+    let organizedData: ICategoriesDataSchema = {} as ICategoriesDataSchema;
+
+    inputData.forEach((item) => {
+      const brandId = item.brand_id;
+      const productId = item.product_id;
+      const subProductId = item.sub_product_id;
+
+      const brandName = item.brand_name;
+      const productName = item.product_name;
+      const subProductName = item.sub_product_name;
+
+      if (!organizedData[brandName]) {
+        organizedData[brandName] = {
+          id: brandId,
+          name: brandName.toString(),
+          products: [],
+        };
+      }
+
+      const brand = organizedData[brandName];
+
+      if (
+        productName &&
+        productId &&
+        !brand.products.find(
+          (sub: { id: number; name: string }) => sub.name === productName
+        )
+      ) {
+        brand.products.push({
+          id: productId,
+          name: productName.toString(),
+          subProducts: [],
+        });
+      }
+
+      const products = brand.products.find(
+        (sub: { id: number; name: string }) => sub.name === productName
+      );
+
+      if (subProductId && subProductName && products) {
+        products.subProducts.push({
+          id: subProductId,
+          name: subProductName,
+        });
+      }
+    });
+
+    return Object.values(organizedData);
+  }
+  static async getProductBrands(
+    sqlClient: Kysely<DB>,
+    requestBody: IProductCategoriesFetchReqBody
+  ) {
+    const PAGE_SIZE =
+      requestBody.pageSize ?? Number(process.env.PAGE_SIZE) ?? 40;
+    if (!requestBody.sort) {
+      requestBody.sort = {
+        path: "created_on",
+        direction: "desc",
+      };
+    }
+    if (!requestBody.pageNo) {
+      requestBody.pageNo = 1;
+    }
+    const total_brands = await sqlClient
+      .selectFrom("brands as b")
+      .leftJoin("products as p", "b.id", "p.brand_id")
+      .leftJoin("sub_products as sp", "p.id", "sp.product_id")
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([
+            eb("b.name", "ilike", `%${requestBody.searchStr}%` as string),
+            eb("p.name", "ilike", `%${requestBody.searchStr}%` as string),
+            eb("sp.name", "ilike", `%${requestBody.searchStr}%` as string),
+          ])
+        )
+      )
+      .select((eb) => eb.fn.count<number>("b.id").distinct().as("total_brands"))
+      .execute();
+    const totalCount = total_brands[0].total_brands;
+
+    const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
+
+    const brandProducts = await sqlClient
+      .selectFrom("brands as b")
+      .leftJoin("products as p", "b.id", "p.brand_id")
+      .leftJoin("sub_products as sp", "p.id", "sp.product_id")
+      .$if(!!requestBody.searchStr, (qb) =>
+        qb.where((eb) =>
+          eb.or([
+            eb("b.name", "ilike", `%${requestBody.searchStr}%` as string),
+            eb("p.name", "ilike", `%${requestBody.searchStr}%` as string),
+            eb("sp.name", "ilike", `%${requestBody.searchStr}%` as string),
+          ])
+        )
+      )
+      .orderBy("b.created_on", requestBody.sort.direction)
+      .limit(PAGE_SIZE)
+      .offset(OFFSET)
+      .select([
+        "b.name as brand_name",
+        "p.name as product_name",
+        "sp.name as sub_product_name",
+        "b.id as brand_id",
+        "p.id as product_id",
+        "sp.id as sub_product_id",
+      ])
+      .execute();
+
+    const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
+
+    const brandWiseProduct: ICategoriesDataSchema =
+      this.formatBrandProductsSqlData(brandProducts);
+    return {
+      brands: brandWiseProduct,
+      totalCount,
+      hasMore,
+    };
+  }
 }
