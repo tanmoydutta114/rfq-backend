@@ -565,7 +565,7 @@ export class productsSqlOps {
         productName &&
         productId &&
         !brand.products.find(
-          (sub: { id: number; name: string }) => sub.name === productName
+          (sub: { id: number; name: string }) => sub.id === productId
         )
       ) {
         brand.products.push({
@@ -576,7 +576,7 @@ export class productsSqlOps {
       }
 
       const products = brand.products.find(
-        (sub: { id: number; name: string }) => sub.name === productName
+        (sub: { id: number; name: string }) => sub.id === productId
       );
 
       if (subProductId && subProductName && products) {
