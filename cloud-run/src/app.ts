@@ -221,7 +221,7 @@ app.post(
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products",
+  "/api/rfqs/:rfqId/brands/:brandId/products",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqProducts }],

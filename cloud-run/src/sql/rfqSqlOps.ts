@@ -89,7 +89,8 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     userId: string,
     rfqId: string,
-    productsIds: number[]
+    productsIds: number[],
+    brandId: number
   ) {
     const now = createDate();
     const addRfqProducts = productsIds.map(async (productId) => {
@@ -102,6 +103,7 @@ export class rfqSqlOps {
           created_on: now,
           modified_by: userId,
           modified_on: now,
+          brand_id: brandId,
         })
         .execute();
     });

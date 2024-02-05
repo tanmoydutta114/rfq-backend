@@ -123,6 +123,7 @@ export interface RfqComments {
 }
 
 export interface RfqProducts {
+  brand_id: number | null;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   id: Generated<number>;
