@@ -83,4 +83,48 @@ export class brandsSqlOps {
       };
     });
   }
+
+  static async addVendorToBrand(
+    sqlClient: Kysely<DB>,
+    userId: string,
+    brandId: number,
+    vendorId: number
+  ) {
+    const addVendor = await sqlClient
+      .insertInto("brand_vendor_map")
+      .values({
+        brand_id: brandId,
+        vendor_id: vendorId,
+        created_by: userId,
+        created_on: createDate(),
+        modified_by: userId,
+        modified_on: createDate(),
+      })
+      .returning("id")
+      .execute();
+    Log.i(`Vendor brand updated successfully!`, addVendor);
+    return {
+      isSuccess: true,
+      message: `Updated successfully!`,
+    };
+  }
+
+  static async getVendorsByBrand(
+    sqlClient: Kysely<DB>,
+    brandId: number,
+    productId: number
+  ) {
+    const vendors = await sqlClient
+      .selectFrom("brand_vendor_map as bvm")
+      .leftJoin("vendors as v", "bvm.vendor_id", "v.id")
+      .select(["v.id", "v.name", "v.email"])
+      .leftJoin("products as p", "p.brand_id", "bvm.brand_id")
+      .where("bvm.brand_id", "=", brandId)
+      .where("p.id", "=", productId)
+      .execute();
+    return {
+      isSuccess: true,
+      vendors,
+    };
+  }
 }

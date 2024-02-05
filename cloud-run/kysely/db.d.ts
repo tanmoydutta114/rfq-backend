@@ -30,6 +30,16 @@ export interface Brands {
   name: string;
 }
 
+export interface BrandVendorMap {
+  brand_id: number | null;
+  created_by: string | null;
+  created_on: Timestamp | null;
+  id: Generated<number>;
+  modified_by: string | null;
+  modified_on: Timestamp | null;
+  vendor_id: number | null;
+}
+
 export interface FileStorage {
   file_data: Buffer;
   file_id: string;
@@ -206,6 +216,7 @@ export interface Vendors {
 }
 
 export interface DB {
+  brand_vendor_map: BrandVendorMap;
   brands: Brands;
   file_storage: FileStorage;
   firebase_users: FirebaseUsers;

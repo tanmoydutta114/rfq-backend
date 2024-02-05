@@ -134,6 +134,20 @@ app.post(
 );
 
 app.post(
+  "/api/query/product-brands/:brandId/vendors/:vendorId",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(brandController.addBrandVendor)
+);
+
+app.get(
+  "/api/query/brands/:brandId/products/:productId",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(brandController.getVendorsByBrandAndProductId)
+);
+
+app.post(
   "/api/main-categories/add",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
