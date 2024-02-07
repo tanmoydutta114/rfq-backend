@@ -37,5 +37,6 @@ export class brandController {
       brandId,
       productId
     );
+    return response;
   }
 }
