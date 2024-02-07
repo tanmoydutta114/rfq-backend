@@ -17,11 +17,13 @@ export class brandController {
     const sqlClient = getSQLClient();
     const brandId = Number(req.params.brandId);
     const vendorId = Number(req.params.vendorId);
+    const productId = Number(req.params.productId);
     const response = brandsSqlOps.addVendorToBrand(
       sqlClient,
       userId,
       brandId,
-      vendorId
+      vendorId,
+      productId
     );
     return response;
   }

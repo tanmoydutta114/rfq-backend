@@ -88,13 +88,15 @@ export class brandsSqlOps {
     sqlClient: Kysely<DB>,
     userId: string,
     brandId: number,
-    vendorId: number
+    vendorId: number,
+    productId: number
   ) {
     const addVendor = await sqlClient
       .insertInto("brand_vendor_map")
       .values({
         brand_id: brandId,
         vendor_id: vendorId,
+        product_id: productId,
         created_by: userId,
         created_on: createDate(),
         modified_by: userId,
@@ -117,8 +119,8 @@ export class brandsSqlOps {
     const vendors = await sqlClient
       .selectFrom("brand_vendor_map as bvm")
       .leftJoin("vendors as v", "bvm.vendor_id", "v.id")
+      .leftJoin("products as p", "p.id", "bvm.product_id")
       .select(["v.id", "v.name", "v.email"])
-      .leftJoin("products as p", "p.brand_id", "bvm.brand_id")
       .where("bvm.brand_id", "=", brandId)
       .where("p.id", "=", productId)
       .execute();

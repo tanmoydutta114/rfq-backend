@@ -25,7 +25,7 @@ export class rfqController {
     const rfqId = req.params.rfqId;
     const reqBody: IRfqProducts = req.body;
     const userId = req.user?.uid ?? "";
-    const brandId = req.params.brandId;
+    const brandId = Number(req.params.brandId);
     const response = await rfqSqlOps.storeRfqProducts(
       sqlClient,
       userId,

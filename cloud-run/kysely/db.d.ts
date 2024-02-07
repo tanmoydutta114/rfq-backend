@@ -37,6 +37,7 @@ export interface BrandVendorMap {
   id: Generated<number>;
   modified_by: string | null;
   modified_on: Timestamp | null;
+  product_id: number | null;
   vendor_id: number | null;
 }
 
