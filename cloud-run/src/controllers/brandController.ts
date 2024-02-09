@@ -39,4 +39,13 @@ export class brandController {
     );
     return response;
   }
+  static async getProductsByBrandId(req: Request) {
+    const sqlClient = getSQLClient();
+    const brandId = Number(req.params.brandId);
+    const response = await brandsSqlOps.getProductsByBrandId(
+      sqlClient,
+      brandId
+    );
+    return response;
+  }
 }

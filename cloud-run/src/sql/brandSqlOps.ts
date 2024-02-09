@@ -129,4 +129,13 @@ export class brandsSqlOps {
       vendors,
     };
   }
+
+  static async getProductsByBrandId(sqlClient: Kysely<DB>, brandId: number) {
+    const products = await sqlClient
+      .selectFrom("products")
+      .where("brand_id", "=", brandId)
+      .select(["name", "id", "description"])
+      .execute();
+    return products;
+  }
 }

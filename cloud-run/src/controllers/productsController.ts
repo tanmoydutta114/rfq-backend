@@ -62,6 +62,12 @@ export class productsController {
     const response = await productsSqlOps.getProductBrands(sqlCLient, reqBody);
     return response;
   }
+  static async getSubProductsByProductId(req: Request) {
+    const sqlCLient = getSQLClient();
+    const productId = Number(req.params.productId);
+    const response = await productsSqlOps.getSubProducts(sqlCLient, productId);
+    return response;
+  }
 
   static async storeProductMainCategories(req: Request) {
     const sqlCLient = getSQLClient();

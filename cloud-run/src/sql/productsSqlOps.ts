@@ -659,4 +659,16 @@ export class productsSqlOps {
       hasMore,
     };
   }
+
+  static async getSubProducts(sqlClient: Kysely<DB>, productId: number) {
+    const subProducts = await sqlClient
+      .selectFrom("sub_products")
+      .where("product_id", "=", productId)
+      .select(["name", "id", "description"])
+      .execute();
+    return {
+      isSuccess: true,
+      subProducts,
+    };
+  }
 }

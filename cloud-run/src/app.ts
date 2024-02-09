@@ -115,6 +115,20 @@ app.post(
   callableWrapper(productsController.getProductsByCategoryId)
 );
 
+app.get(
+  "/api/brands/:brandId/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(brandController.getProductsByBrandId)
+);
+
+app.get(
+  "/api/products/:productId/sub-products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(productsController.getSubProductsByProductId)
+);
+
 app.post(
   "/api/query/product-categories",
   ApiUtility.checkUserAuth({}),
