@@ -134,7 +134,7 @@ app.post(
 );
 
 app.post(
-  "/api/query/product-brands/:brandId/vendors/:vendorId",
+  "/api/query/product-brands/:brandId//products/:productId/vendors/:vendorId",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(brandController.addBrandVendor)
