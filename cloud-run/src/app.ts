@@ -260,6 +260,13 @@ app.get(
 );
 
 app.get(
+  "/api/rfqs/:rfqId/brands",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getRFQBrandsByRfqId)
+);
+
+app.get(
   "/api/rfqs/:rfqId/brands/:brandId/vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),

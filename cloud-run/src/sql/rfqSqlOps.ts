@@ -494,6 +494,21 @@ export class rfqSqlOps {
     };
   }
 
+  static async getBrandsByRfqId(sqlClient: Kysely<DB>, rfqId: string) {
+    const productsBrand = await sqlClient
+      .selectFrom("rfq_products as rp")
+      .leftJoin("brands as b", "b.id", "rp.brand_id")
+      .where("rp.rfq_id", "=", rfqId)
+      .select(["b.name", "b.id"])
+      .distinct()
+      .execute();
+
+    return {
+      isSuccess: true,
+      productsBrand,
+    };
+  }
+
   static async getRFQVendorsByBrandAndRfq(
     sqlClient: Kysely<DB>,
     rfqId: string,
