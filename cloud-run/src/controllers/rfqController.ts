@@ -225,4 +225,10 @@ export class rfqController {
     const response = await rfqSqlOps.getBrandsByRfqId(sqlClient, rfqId);
     return response;
   }
+  static async makeRFQDone(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = await rfqSqlOps.makeRFQDone(sqlClient, rfqId);
+    return response;
+  }
 }

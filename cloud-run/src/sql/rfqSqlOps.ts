@@ -546,4 +546,19 @@ export class rfqSqlOps {
       vendors,
     };
   }
+
+  static async makeRFQDone(sqlClient: Kysely<DB>, rfqId: string) {
+    await sqlClient
+      .updateTable("rfqs")
+      .where("rfq_id", "=", rfqId)
+      .set({
+        is_finished: true,
+      })
+      .execute();
+    Log.i(`Rfq updated successfully!`);
+    return {
+      isSuccess: true,
+      message: `RFQ set as completed!`,
+    };
+  }
 }
