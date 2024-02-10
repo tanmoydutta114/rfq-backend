@@ -146,6 +146,7 @@ export interface Rfqs {
 
 export interface RfqVendors {
   accept_rfq: Generated<boolean | null>;
+  brand_id: number | null;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   email_sent_on: Timestamp | null;

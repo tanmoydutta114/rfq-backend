@@ -120,6 +120,7 @@ export class rfqSqlOps {
     userId: string,
     rfqId: string,
     productId: number,
+    brandId: number,
     vendorDetails: {
       name: string;
       id: number;
@@ -139,6 +140,7 @@ export class rfqSqlOps {
             product_id: productId,
             passcode: password,
             vendor_id: vendor.id,
+            brand_id: brandId,
             created_by: userId,
             created_on: now,
             modified_by: userId,
@@ -372,7 +374,6 @@ export class rfqSqlOps {
       fileId: storeFile.file_id,
     };
   }
-
   static async deleteFile(sqlClient: Kysely<DB>, fileId: string) {
     await sqlClient
       .deleteFrom("file_storage")
@@ -380,7 +381,6 @@ export class rfqSqlOps {
       .execute();
     return { isSuccess: true, message: `File deleted successful!` };
   }
-
   static async getFile(sqlClient: Kysely<DB>, fileId: string) {
     const [fileData] = await sqlClient
       .selectFrom("file_storage")
@@ -390,7 +390,6 @@ export class rfqSqlOps {
     Log.i(`File download successfully!`);
     return { isSuccess: true, fileData: fileData };
   }
-
   static async getRfqProductWiseVendors(
     sqlClient: Kysely<DB>,
     rfqId: string,
@@ -414,7 +413,6 @@ export class rfqSqlOps {
       vendors,
     };
   }
-
   static async getRFQAddProductsDropdown(
     sqlClient: Kysely<DB>,
     refqId: string
@@ -445,7 +443,6 @@ export class rfqSqlOps {
       products,
     };
   }
-
   static async getVendorByProductIdWhomMailNotYetSent(
     sqlClient: Kysely<DB>,
     productId: number,
@@ -476,6 +473,41 @@ export class rfqSqlOps {
         "v.email as vendor_email",
       ])
       .execute();
+    return {
+      isSuccess: true,
+      vendors,
+    };
+  }
+
+  static async getRFQBrandsAndProduct(sqlClient: Kysely<DB>, rfqId: string) {
+    const productsBrand = await sqlClient
+      .selectFrom("rfq_vendors as rv")
+      .leftJoin("rfq_products as rp", "rv.rfq_id", "rp.rfq_id")
+      .leftJoin("brands as b", "b.id", "rp.brand_id")
+      .leftJoin("products as p", "p.id", "rp.product_id")
+      .where("rv.rfq_id", "=", rfqId)
+      .select(["b.name", "b.id", "p.name", "p.id"])
+      .execute();
+
+    return {
+      isSuccess: true,
+      productsBrand,
+    };
+  }
+
+  static async getRFQVendorsByBrandAndRfq(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    brandId: number
+  ) {
+    const vendors = await sqlClient
+      .selectFrom("rfq_vendors as rv")
+      .leftJoin("vendors as v", "v.id", "rv.vendor_id")
+      .where("rv.rfq_id", "=", rfqId)
+      .where("rv.brand_id", "=", brandId)
+      .select(["v.name", "v.id"])
+      .execute();
+
     return {
       isSuccess: true,
       vendors,

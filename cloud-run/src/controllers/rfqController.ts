@@ -40,6 +40,7 @@ export class rfqController {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
     const productId = Number(req.params.productId);
+    const brandId = Number(req.params.brandId);
     const reqBody: IRfqVendors = req.body;
     const userId = req.user?.uid ?? "";
     const response = await rfqSqlOps.storeRfqVendors(
@@ -47,6 +48,7 @@ export class rfqController {
       userId,
       rfqId,
       productId,
+      brandId,
       reqBody.vendors,
       reqBody.emailBody
     );
@@ -182,6 +184,24 @@ export class rfqController {
       sqlCLient,
       productId,
       rfqId
+    );
+    return response;
+  }
+  static async getBrandsProductsByRfqId(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = await rfqSqlOps.getRFQBrandsAndProduct(sqlClient, rfqId);
+    return response;
+  }
+  static async getVendorsByRfqIdAndBrand(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const brandId = Number(req.params.brandId);
+
+    const response = await rfqSqlOps.getRFQVendorsByBrandAndRfq(
+      sqlClient,
+      rfqId,
+      brandId
     );
     return response;
   }

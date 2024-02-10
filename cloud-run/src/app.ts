@@ -148,7 +148,7 @@ app.post(
 );
 
 app.post(
-  "/api/query/product-brands/:brandId//products/:productId/vendors/:vendorId",
+  "/api/query/product-brands/:brandId/products/:productId/vendors/:vendorId",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(brandController.addBrandVendor)
@@ -244,12 +244,26 @@ app.post(
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products/:productId/vendors",
+  "/api/rfqs/:rfqId/products/:productId/brands/:brandId/vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqVendors }],
   }),
   callableWrapper(rfqController.addRFVendors)
+);
+
+app.get(
+  "/api/rfqs/:rfqId/brand-products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getBrandsProductsByRfqId)
+);
+
+app.get(
+  "/api/rfqs/:rfqId/brands/:brandId/vendors",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getVendorsByRfqIdAndBrand)
 );
 
 app.get(
