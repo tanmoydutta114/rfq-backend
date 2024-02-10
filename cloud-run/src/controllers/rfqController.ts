@@ -205,4 +205,17 @@ export class rfqController {
     );
     return response;
   }
+
+  static async getRFQProductsByBrandAndRfq(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const brandId = Number(req.params.brandId);
+
+    const response = await rfqSqlOps.getRFQProductsByBrandAndRfq(
+      sqlClient,
+      rfqId,
+      brandId
+    );
+    return response;
+  }
 }

@@ -276,6 +276,15 @@ app.get(
 );
 
 app.get(
+  "/api/rfqs/:rfqId/brands/:brandId/products",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    expectedProps: { params: ["rfqId", "brandId"] },
+  }),
+  callableWrapper(rfqController.getRfqProductWiseVendors)
+);
+
+app.get(
   "/api/rfqs/:rfqId/products/:productId/vendors-dropdown",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({

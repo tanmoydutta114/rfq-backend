@@ -481,11 +481,10 @@ export class rfqSqlOps {
 
   static async getRFQBrandsAndProduct(sqlClient: Kysely<DB>, rfqId: string) {
     const productsBrand = await sqlClient
-      .selectFrom("rfq_vendors as rv")
-      .leftJoin("rfq_products as rp", "rv.rfq_id", "rp.rfq_id")
+      .selectFrom("rfq_products as rp")
       .leftJoin("brands as b", "b.id", "rp.brand_id")
       .leftJoin("products as p", "p.id", "rp.product_id")
-      .where("rv.rfq_id", "=", rfqId)
+      .where("rp.rfq_id", "=", rfqId)
       .select(["b.name", "b.id", "p.name", "p.id"])
       .execute();
 
@@ -506,6 +505,25 @@ export class rfqSqlOps {
       .where("rv.rfq_id", "=", rfqId)
       .where("rv.brand_id", "=", brandId)
       .select(["v.name", "v.id"])
+      .execute();
+
+    return {
+      isSuccess: true,
+      vendors,
+    };
+  }
+
+  static async getRFQProductsByBrandAndRfq(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    brandId: number
+  ) {
+    const vendors = await sqlClient
+      .selectFrom("rfq_products as rp")
+      .leftJoin("products as p", "rp.product_id", "p.id")
+      .where("rp.rfq_id", "=", rfqId)
+      .where("rp.brand_id", "=", brandId)
+      .select(["p.name", "p.id"])
       .execute();
 
     return {
