@@ -226,7 +226,7 @@ app.post(
 );
 
 app.put(
-  "/api/rfqs/rfqId/done",
+  "/api/rfqs/:rfqId/done",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.makeRFQDone)
