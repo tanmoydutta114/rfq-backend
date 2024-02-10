@@ -231,4 +231,11 @@ export class rfqController {
     const response = await rfqSqlOps.makeRFQDone(sqlClient, rfqId);
     return response;
   }
+
+  static async rfqCount(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const response = await rfqSqlOps.getRfqCount(sqlClient);
+    return response;
+  }
 }

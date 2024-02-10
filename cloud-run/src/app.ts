@@ -232,6 +232,13 @@ app.put(
   callableWrapper(rfqController.makeRFQDone)
 );
 
+app.get(
+  "/api/rfqs/count",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.rfqCount)
+);
+
 app.post(
   "/api/rfqs/:rfqId/products",
   ApiUtility.checkUserAuth({}),

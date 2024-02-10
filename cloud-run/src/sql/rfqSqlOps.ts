@@ -561,4 +561,29 @@ export class rfqSqlOps {
       message: `RFQ set as completed!`,
     };
   }
+
+  static async getRfqCount(sqlClient: Kysely<DB>) {
+    const finishedRfqCount = sqlClient
+      .selectFrom("rfqs")
+      .where("is_finished", "=", true)
+      .select((eb) => eb.fn.countAll<number>().as("total_finished_rfqs"));
+
+    const notFinishedRfqCount = sqlClient
+      .selectFrom("rfqs")
+      .where("is_finished", "=", false)
+      .select((eb) => eb.fn.countAll<number>().as("total_not_finished_rfqs"));
+
+    const totalRfqCount = sqlClient
+      .selectFrom("rfqs")
+      .select((eb) => eb.fn.countAll<number>().as("total_rfqs"));
+
+    return {
+      isSuccess: true,
+      data: {
+        ...finishedRfqCount,
+        ...notFinishedRfqCount,
+        ...totalRfqCount,
+      },
+    };
+  }
 }
