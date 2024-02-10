@@ -73,7 +73,7 @@ export const ZProductCategoryStoreReq = z.object({
 export const ZProductStoreReq = z.object({
   name: z.string(),
   description: z.string().optional().nullable(),
-  categoryId: z.number().nullable(),
+  categoryId: z.number().optional().nullable(),
   subCategoryId: z.number().optional().nullable(),
   subSubCategoryId: z.number().optional().nullable(),
   brandId: z.number(),
