@@ -42,10 +42,15 @@ export interface BrandVendorMap {
 }
 
 export interface FileStorage {
+  brand_id: number | null;
+  commenter_type: number | null;
   file_data: Buffer;
   file_id: string;
   file_name: string;
   file_type: string;
+  product_id: number | null;
+  rfq_id: string | null;
+  vendor_id: number | null;
 }
 
 export interface FirebaseUsers {
@@ -110,6 +115,7 @@ export interface ProductVendorMap {
 }
 
 export interface RfqComments {
+  brand_id: number | null;
   comment: Json | null;
   commenter_type: number | null;
   created_by: string | null;

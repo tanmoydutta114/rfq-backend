@@ -287,6 +287,7 @@ export class rfqSqlOps {
     rqfId: string,
     productId: number,
     vendorId: number,
+    brandId: number,
     reqBody: IRfqCommentsReq
   ) {
     const now = createDate();
@@ -297,6 +298,7 @@ export class rfqSqlOps {
         rfq_id: rqfId,
         product_id: productId,
         vendor_id: vendorId,
+        brand_id: brandId,
         comment: JSON.stringify(comment),
         file_ref: reqBody.fileRef,
         created_by: userId,
@@ -354,7 +356,12 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     fileName: string,
     fileType: string,
-    fileData: Buffer
+    fileData: Buffer,
+    rfqId: string,
+    productId: number,
+    vendorId: number,
+    brandId: number,
+    commenterType: number
   ) {
     const generatedId = nanoid();
     const [storeFile] = await sqlClient
@@ -364,6 +371,11 @@ export class rfqSqlOps {
         file_name: fileName,
         file_type: fileType,
         file_data: fileData,
+        brand_id: brandId,
+        product_id: productId,
+        rfq_id: rfqId,
+        commenter_type: commenterType,
+        vendor_id: vendorId,
       })
       .returning("file_id")
       .execute();

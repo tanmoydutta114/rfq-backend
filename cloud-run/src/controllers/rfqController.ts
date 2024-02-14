@@ -72,6 +72,11 @@ export class rfqController {
   static async storeFile(req: Request) {
     const sqlCLient = getSQLClient();
     const fileData = req.file;
+    const rfqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const vendorId = Number(req.params.vendorId);
+    const brandId = Number(req.params.brandId);
+    const commenterType = Number(req.params.commenterType);
 
     if (!fileData) {
       throw new HttpError(HttpStatusCode.BAD_REQUEST, "File not found");
@@ -86,7 +91,12 @@ export class rfqController {
       sqlCLient,
       originalname,
       fileType,
-      buffer
+      buffer,
+      rfqId,
+      productId,
+      vendorId,
+      brandId,
+      commenterType
     );
     return response;
   }
@@ -122,6 +132,7 @@ export class rfqController {
     const rfqId = req.params.rfqId;
     const productId = Number(req.params.productId);
     const vendorId = Number(req.params.vendorId);
+    const brandId = Number(req.params.brandId);
     const reqBody: IRfqCommentsReq = req.body;
     const response = await rfqSqlOps.storeRfqComments(
       sqlCLient,
@@ -129,6 +140,7 @@ export class rfqController {
       rfqId,
       productId,
       vendorId,
+      brandId,
       reqBody
     );
     return response;
