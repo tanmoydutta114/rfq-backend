@@ -292,6 +292,7 @@ export class rfqSqlOps {
   ) {
     const now = createDate();
     const comment = reqBody.comments;
+    console.log(userId, rqfId, productId, vendorId, brandId);
     const [storeComment] = await sqlClient
       .insertInto("rfq_comments")
       .values({

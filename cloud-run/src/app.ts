@@ -315,7 +315,7 @@ app.get(
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comment",
+  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/comment",
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqCommentsReq }],
@@ -333,7 +333,7 @@ app.get(
 app.post(
   "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/:commenterType/file-upload",
   upload.single("file"),
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.storeFile)
 );
@@ -348,14 +348,14 @@ app.get(
 app.get(
   "/api/rfqs/file/:fileId",
   upload.single("file"),
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   rfqController.downloadFile
 );
 
 app.delete(
   "/api/rfqs/file/:fileId",
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   callableWrapper(rfqController.deleteFile)
 );
 
