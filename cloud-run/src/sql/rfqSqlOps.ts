@@ -524,7 +524,12 @@ export class rfqSqlOps {
       .leftJoin("brands as b", "b.id", "rp.brand_id")
       .leftJoin("products as p", "p.id", "rp.product_id")
       .where("rp.rfq_id", "=", rfqId)
-      .select(["b.name", "b.id", "p.name", "p.id"])
+      .select([
+        "b.name as brandName",
+        "b.id as brandId",
+        "p.name as productName",
+        "p.id as productId",
+      ])
       .execute();
 
     return {

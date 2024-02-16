@@ -302,7 +302,7 @@ app.get(
   checkPermissionAndReqSchema({
     expectedProps: { params: ["rfqId", "brandId"] },
   }),
-  callableWrapper(rfqController.getRfqProductWiseVendors)
+  callableWrapper(rfqController.getRFQProductsByBrandAndRfq)
 );
 
 app.get(
