@@ -333,6 +333,7 @@ export class rfqSqlOps {
       .where("rfq_id", "=", rfqId)
       .where("product_id", "=", productId)
       .where("vendor_id", "=", vendorId)
+      .orderBy("rc.created_on asc")
       .selectAll("rc")
       .select(["v.name"])
       .execute();
