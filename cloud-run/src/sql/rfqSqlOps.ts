@@ -325,14 +325,17 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     rfqId: string,
     productId: number,
-    vendorId: number
+    vendorId: number,
+    brandId: number
   ) {
+    console.log(brandId);
     const comments = await sqlClient
       .selectFrom("rfq_comments as rc")
       .leftJoin("vendors as v", "rc.vendor_id", "v.id")
       .where("rfq_id", "=", rfqId)
       .where("product_id", "=", productId)
       .where("vendor_id", "=", vendorId)
+      .where("brand_id", "=", brandId)
       .orderBy("rc.created_on asc")
       .selectAll("rc")
       .select(["v.name"])

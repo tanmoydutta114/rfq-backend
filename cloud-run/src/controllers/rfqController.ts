@@ -185,11 +185,13 @@ export class rfqController {
     const rfqId = req.params.rfqId;
     const productId = Number(req.params.productId);
     const vendorId = Number(req.params.vendorId);
+    const brandId = Number(req.params.brandId);
     const response = await rfqSqlOps.getRfqComments(
       sqlCLient,
       rfqId,
       productId,
-      vendorId
+      vendorId,
+      brandId
     );
     return response;
   }

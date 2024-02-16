@@ -324,7 +324,7 @@ app.post(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/comments",
+  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/comments",
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getComments)
