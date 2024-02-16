@@ -597,26 +597,29 @@ export class rfqSqlOps {
   }
 
   static async getRfqCount(sqlClient: Kysely<DB>) {
-    const finishedRfqCount = sqlClient
+    const [finishedRfqCount] = await sqlClient
       .selectFrom("rfqs")
       .where("is_finished", "=", true)
-      .select((eb) => eb.fn.countAll<number>().as("total_finished_rfqs"));
+      .select((eb) => eb.fn.countAll<number>().as("total_finished_rfqs"))
+      .execute();
 
-    const notFinishedRfqCount = sqlClient
+    const [notFinishedRfqCount] = await sqlClient
       .selectFrom("rfqs")
       .where("is_finished", "=", false)
-      .select((eb) => eb.fn.countAll<number>().as("total_not_finished_rfqs"));
+      .select((eb) => eb.fn.countAll<number>().as("total_not_finished_rfqs"))
+      .execute();
 
-    const totalRfqCount = sqlClient
+    const [totalRfqCount] = await sqlClient
       .selectFrom("rfqs")
-      .select((eb) => eb.fn.countAll<number>().as("total_rfqs"));
+      .select((eb) => eb.fn.countAll<number>().as("total_rfqs"))
+      .execute();
 
     return {
       isSuccess: true,
       data: {
-        ...finishedRfqCount,
-        ...notFinishedRfqCount,
-        ...totalRfqCount,
+        finishedRfqCount,
+        notFinishedRfqCount,
+        totalRfqCount,
       },
     };
   }
