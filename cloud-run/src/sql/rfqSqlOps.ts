@@ -386,6 +386,28 @@ export class rfqSqlOps {
       fileId: storeFile.file_id,
     };
   }
+  static async getFileList(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    productId: number,
+    vendorId: number,
+    brandId: number
+  ) {
+    const getFile = await sqlClient
+      .selectFrom("file_storage")
+      .where("brand_id", "=", brandId)
+      .where("rfq_id", "=", rfqId)
+      .where("vendor_id", "=", vendorId)
+      .where("product_id", "=", productId)
+      .selectAll()
+      .execute();
+    Log.i(`File fetched successfully!`);
+    return {
+      isSuccess: true,
+      message: "File stored successfully",
+      getFile,
+    };
+  }
   static async deleteFile(sqlClient: Kysely<DB>, fileId: string) {
     await sqlClient
       .deleteFrom("file_storage")

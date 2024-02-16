@@ -331,11 +331,18 @@ app.get(
 );
 
 app.post(
-  "/api/rfqs/file-upload",
+  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/:commenterType/file-upload",
   upload.single("file"),
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.storeFile)
+);
+
+app.get(
+  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/file-list",
+  ApiUtility.checkUserAuth({ accessType: "external" }),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getFiles)
 );
 
 app.get(

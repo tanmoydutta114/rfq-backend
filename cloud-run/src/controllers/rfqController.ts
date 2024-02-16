@@ -100,6 +100,24 @@ export class rfqController {
     );
     return response;
   }
+  static async getFiles(req: Request) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const productId = Number(req.params.productId);
+    const vendorId = Number(req.params.vendorId);
+    const brandId = Number(req.params.brandId);
+
+    // TODO : The file is now need to store in DB
+
+    const response = await rfqSqlOps.getFileList(
+      sqlCLient,
+      rfqId,
+      productId,
+      vendorId,
+      brandId
+    );
+    return response;
+  }
 
   static async deleteFile(req: Request) {
     const sqlCLient = getSQLClient();
