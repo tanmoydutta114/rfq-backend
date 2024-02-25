@@ -239,6 +239,7 @@ app.get(
   callableWrapper(rfqController.rfqCount)
 );
 
+// Deprecated
 app.post(
   "/api/rfqs/:rfqId/products",
   ApiUtility.checkUserAuth({}),
@@ -258,12 +259,12 @@ app.post(
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products/:productId/brands/:brandId/vendors",
+  "/api/rfqs/:rfqId/brands/:brandId/send-mail-vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqVendors }],
   }),
-  callableWrapper(rfqController.addRFVendors)
+  callableWrapper(rfqController.sendMailToVendorsForRFQ)
 );
 
 app.get(
@@ -274,14 +275,29 @@ app.get(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/brands",
+  "/api/brandId/:brandId/products/:productId/vendors", // NEW API for get only the vendors not yet mapped to vendors -> products
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
-  callableWrapper(rfqController.getRFQBrandsByRfqId)
+  callableWrapper(rfqController.getVendorsForProductNotAssignedYet)
+);
+
+// NOT NEEDED
+app.get(
+  "/api/rfqs/:rfqId/new-brands",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getRFQBrandsByRfqId) // New Api to add Brand to existing RFQ
 );
 
 app.get(
-  "/api/rfqs/:rfqId/brands/:brandId/vendors",
+  "/api/rfqs/:rfqId/brands",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getRFQAddedBrandsByRfqId) // New Api to Fetch already added brands of an API
+);
+
+app.get(
+  "/api/rfqs/:rfqId/brands/:brandId/vendors", // New Api to get the list of vendors for comments
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getVendorsByRfqIdAndBrand)
@@ -302,7 +318,7 @@ app.get(
   checkPermissionAndReqSchema({
     expectedProps: { params: ["rfqId", "brandId"] },
   }),
-  callableWrapper(rfqController.getRFQProductsByBrandAndRfq)
+  callableWrapper(rfqController.getRfqProducts)
 );
 
 app.get(
@@ -324,14 +340,14 @@ app.post(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/comments",
+  "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/comments",
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getComments)
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/:commenterType/file-upload",
+  "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/:commenterType/file-upload",
   upload.single("file"),
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
@@ -339,7 +355,7 @@ app.post(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/file-list",
+  "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/file-list",
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getFiles)
@@ -360,7 +376,7 @@ app.delete(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/products",
+  "/api/rfqs/:rfqId/brands/:brandId/products", // NEW api to get the products for RFQ
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getRfqProducts)

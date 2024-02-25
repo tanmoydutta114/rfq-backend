@@ -10,6 +10,7 @@ import {
 import { rfqSqlOps } from "../sql/rfqSqlOps";
 import { HttpError } from "../utils/HttpError";
 import { HttpStatusCode } from "../utils/HttpStatusCodes";
+import { Json, JsonArray } from "../../kysely/db";
 
 export class rfqController {
   static async storeNewRfqs(req: Request) {
@@ -36,12 +37,12 @@ export class rfqController {
     return response;
   }
 
-  static async addRFVendors(req: Request) {
+  static async sendMailToVendorsForRFQ(req: Request) {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const productId = Number(req.params.productId);
     const brandId = Number(req.params.brandId);
     const reqBody: IRfqVendors = req.body;
+    const productId = reqBody.products as unknown as Json[];
     const userId = req.user?.uid ?? "";
     const response = await rfqSqlOps.storeRfqVendors(
       sqlClient,
@@ -73,7 +74,7 @@ export class rfqController {
     const sqlCLient = getSQLClient();
     const fileData = req.file;
     const rfqId = req.params.rfqId;
-    const productId = Number(req.params.productId);
+    const rfqVendorId = Number(req.params.rfqVendorId);
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const commenterType = Number(req.params.commenterType);
@@ -93,7 +94,7 @@ export class rfqController {
       fileType,
       buffer,
       rfqId,
-      productId,
+      rfqVendorId,
       vendorId,
       brandId,
       commenterType
@@ -103,7 +104,7 @@ export class rfqController {
   static async getFiles(req: Request) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const productId = Number(req.params.productId);
+    const rfqVendorId = Number(req.params.rfqVendorId);
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
 
@@ -112,7 +113,7 @@ export class rfqController {
     const response = await rfqSqlOps.getFileList(
       sqlCLient,
       rfqId,
-      productId,
+      rfqVendorId,
       vendorId,
       brandId
     );
@@ -148,15 +149,16 @@ export class rfqController {
     const sqlCLient = getSQLClient();
     const userId = req.user?.uid ?? "";
     const rfqId = req.params.rfqId;
-    const productId = Number(req.params.productId);
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const reqBody: IRfqCommentsReq = req.body;
+    const rfqVendorId = Number(reqBody);
+
     const response = await rfqSqlOps.storeRfqComments(
       sqlCLient,
       userId,
       rfqId,
-      productId,
+      rfqVendorId,
       vendorId,
       brandId,
       reqBody
@@ -167,7 +169,9 @@ export class rfqController {
   static async getRfqProducts(req: Request) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const response = await rfqSqlOps.getRfqProducts(sqlCLient, rfqId);
+    const brandId = Number(req.params.brandId);
+
+    const response = await rfqSqlOps.getRfqProducts(sqlCLient, rfqId, brandId);
     return response;
   }
   static async getRFQAddProductsDropdown(req: Request) {
@@ -183,13 +187,13 @@ export class rfqController {
   static async getComments(req: Request) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const productId = Number(req.params.productId);
+    const rfqVendorId = Number(req.params.rfqVendorId);
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const response = await rfqSqlOps.getRfqComments(
       sqlCLient,
       rfqId,
-      productId,
+      rfqVendorId,
       vendorId,
       brandId
     );
@@ -257,17 +261,35 @@ export class rfqController {
     const response = await rfqSqlOps.getBrandsByRfqId(sqlClient, rfqId);
     return response;
   }
+  static async getRFQAddedBrandsByRfqId(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+
+    const response = await rfqSqlOps.getAddedBrandsByRfqId(sqlClient, rfqId);
+    return response;
+  }
   static async makeRFQDone(req: Request) {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
     const response = await rfqSqlOps.makeRFQDone(sqlClient, rfqId);
     return response;
   }
-
   static async rfqCount(req: Request) {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
     const response = await rfqSqlOps.getRfqCount(sqlClient);
+    return response;
+  }
+
+  static async getVendorsForProductNotAssignedYet(req: Request) {
+    const sqlClient = getSQLClient();
+    const brandId = Number(req.params.brandId);
+    const productId = Number(req.params.productId);
+    const response = await rfqSqlOps.getVendorsForProductNotAssignedYet(
+      sqlClient,
+      brandId,
+      productId
+    );
     return response;
   }
 }

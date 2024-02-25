@@ -1,7 +1,7 @@
 import { InsertObject, Kysely, sql } from "kysely";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { nanoid } from "nanoid";
-import { DB } from "../../kysely/db";
+import { DB, Json, JsonArray, JsonValue } from "../../kysely/db";
 import {
   IRfqCommentsReq,
   IRfqStoreReq,
@@ -119,7 +119,7 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     userId: string,
     rfqId: string,
-    productId: number,
+    productId: Json[],
     brandId: number,
     vendorDetails: {
       name: string;
@@ -133,7 +133,7 @@ export class rfqSqlOps {
       await sqlClient.transaction().execute(async (transaction) => {
         Log.i(`Sending the email to ${vendor.name} (${vendor.email})`);
         const password = generateId();
-        await transaction
+        const [recordId] = await transaction
           .insertInto("rfq_vendors")
           .values({
             rfq_id: rfqId,
@@ -146,19 +146,20 @@ export class rfqSqlOps {
             modified_by: userId,
             modified_on: now,
           })
+          .returning("id")
           .execute();
         // TODO : Prepare the email body and send the email using the email controller.
 
         const vendorEmailBody = emailBody
-          .replace("&lt;vendorName&gt;&lt;/vendorName&gt;", vendor.name)
-          .replace("&lt;password&gt;&lt;/password&gt;", password);
+          .replace("##vendorName##", vendor.name)
+          .replace("##commentsLink##", password);
         // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
         //   vendor.email,
         // ]);
-        const updateEmailStatus = await transaction
+        await transaction
           .updateTable("rfq_vendors")
           .where("rfq_id", "=", rfqId)
-          .where("product_id", "=", productId)
+          .where("id", "=", recordId.id)
           .where("vendor_id", "=", vendor.id)
           .set({ email_sent_on: createDate() })
           .execute();
@@ -167,10 +168,10 @@ export class rfqSqlOps {
       });
     });
     await Promise.all(addRfqProducts);
-    Log.i(`Products added to the RFQ!`);
+    Log.i(`Email sent to all the vendors...`);
     return {
       iSuccess: true,
-      message: `Products added to the category successfully added!`,
+      message: `Email sent successfully!`,
     };
   }
 
@@ -268,13 +269,27 @@ export class rfqSqlOps {
     };
   }
 
-  static async getRfqProducts(sqlClient: Kysely<DB>, rfqId: string) {
-    const products = await sqlClient
+  static async getRfqProducts(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    brandId: number
+  ) {
+    const rfqProducts = await sqlClient
       .selectFrom("rfq_products as rp")
       .leftJoin("products as p", "rp.product_id", "p.id")
       .where("rfq_id", "=", rfqId)
-      .select(["p.id", "p.name", "p.description"])
+      .where("p.brand_id", "=", brandId)
+      .select(["product_id"])
       .execute();
+    const rfqProductsIds = rfqProducts.map((product) => product.product_id);
+
+    const products = await sqlClient
+      .selectFrom("products")
+      .where("id", "not in", rfqProductsIds)
+      .where("brand_id", "=", brandId)
+      .selectAll()
+      .execute();
+
     return {
       isSuccess: true,
       products,
@@ -285,19 +300,19 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     userId: string,
     rqfId: string,
-    productId: number,
+    rfqVendorId: number,
     vendorId: number,
     brandId: number,
     reqBody: IRfqCommentsReq
   ) {
     const now = createDate();
     const comment = reqBody.comments;
-    console.log(userId, rqfId, productId, vendorId, brandId);
+    console.log(userId, rqfId, rfqVendorId, vendorId, brandId);
     const [storeComment] = await sqlClient
       .insertInto("rfq_comments")
       .values({
         rfq_id: rqfId,
-        product_id: productId,
+        rfq_vendor_id: rfqVendorId,
         vendor_id: vendorId,
         brand_id: brandId,
         comment: JSON.stringify(comment),
@@ -324,7 +339,7 @@ export class rfqSqlOps {
   static async getRfqComments(
     sqlClient: Kysely<DB>,
     rfqId: string,
-    productId: number,
+    rfqVendorId: number,
     vendorId: number,
     brandId: number
   ) {
@@ -333,7 +348,7 @@ export class rfqSqlOps {
       .selectFrom("rfq_comments as rc")
       .leftJoin("vendors as v", "rc.vendor_id", "v.id")
       .where("rfq_id", "=", rfqId)
-      .where("product_id", "=", productId)
+      .where("rc.rfq_vendor_id", "=", rfqVendorId)
       .where("vendor_id", "=", vendorId)
       .where("brand_id", "=", brandId)
       .orderBy("rc.created_on asc")
@@ -363,7 +378,7 @@ export class rfqSqlOps {
     fileType: string,
     fileData: Buffer,
     rfqId: string,
-    productId: number,
+    rfqVendorId: number,
     vendorId: number,
     brandId: number,
     commenterType: number
@@ -377,7 +392,7 @@ export class rfqSqlOps {
         file_type: fileType,
         file_data: fileData,
         brand_id: brandId,
-        product_id: productId,
+        rfq_vendor_id: rfqVendorId,
         rfq_id: rfqId,
         commenter_type: commenterType,
         vendor_id: vendorId,
@@ -394,7 +409,7 @@ export class rfqSqlOps {
   static async getFileList(
     sqlClient: Kysely<DB>,
     rfqId: string,
-    productId: number,
+    rfqVendorId: number,
     vendorId: number,
     brandId: number
   ) {
@@ -403,7 +418,7 @@ export class rfqSqlOps {
       .where("brand_id", "=", brandId)
       .where("rfq_id", "=", rfqId)
       .where("vendor_id", "=", vendorId)
-      .where("product_id", "=", productId)
+      .where("rfq_vendor_id", "=", rfqVendorId)
       .selectAll()
       .execute();
     Log.i(`File fetched successfully!`);
@@ -435,10 +450,9 @@ export class rfqSqlOps {
     productId: number
   ) {
     const vendors = await sqlClient
-      .selectFrom("rfq_vendors as rv")
-      .leftJoin("vendors as v", "rv.vendor_id", "v.id")
-      .where("rv.rfq_id", "=", rfqId)
-      .where("rv.product_id", "=", productId)
+      .selectFrom("product_vendor_map as pvm")
+      .leftJoin("vendors as v", "pvm.vendor_id", "v.id")
+      .where("pvm.product_id", "=", productId)
       .select([
         "v.name as vendor_name",
         "v.id",
@@ -489,7 +503,7 @@ export class rfqSqlOps {
   ) {
     const vendorDetails = await sqlClient
       .selectFrom("rfq_vendors")
-      .where("product_id", "=", productId)
+      // .where("product_id", "=", productId)
       .where("rfq_id", "=", rfqId)
       .select("vendor_id")
       .execute();
@@ -543,10 +557,29 @@ export class rfqSqlOps {
       .selectFrom("rfq_products as rp")
       .leftJoin("brands as b", "b.id", "rp.brand_id")
       .where("rp.rfq_id", "=", rfqId)
-      .select(["b.name", "b.id"])
+      .select(["b.id"])
       .distinct()
       .execute();
+    const productsBrandIds = productsBrand.map((product) => product.id);
+    const brands = await sqlClient
+      .selectFrom("brands")
+      .where("id", "not in", productsBrandIds)
+      .selectAll()
+      .execute();
 
+    return {
+      isSuccess: true,
+      brands,
+    };
+  }
+  static async getAddedBrandsByRfqId(sqlClient: Kysely<DB>, rfqId: string) {
+    const productsBrand = await sqlClient
+      .selectFrom("rfq_products as rp")
+      .leftJoin("brands as b", "b.id", "rp.brand_id")
+      .where("rp.rfq_id", "=", rfqId)
+      .select(["b.id", "b.name"])
+      .distinct()
+      .execute();
     return {
       isSuccess: true,
       productsBrand,
@@ -563,7 +596,7 @@ export class rfqSqlOps {
       .leftJoin("vendors as v", "v.id", "rv.vendor_id")
       .where("rv.rfq_id", "=", rfqId)
       .where("rv.brand_id", "=", brandId)
-      .select(["v.name", "v.id"])
+      .select(["v.name", "v.id", "rv.product_id", "rv.id as rfqVendorId"])
       .execute();
 
     return {
@@ -631,6 +664,33 @@ export class rfqSqlOps {
         notFinishedRfqCount,
         totalRfqCount,
       },
+    };
+  }
+
+  static async getVendorsForProductNotAssignedYet(
+    sqlClient: Kysely<DB>,
+    brandId: number,
+    productId: number
+  ) {
+    const getVendorsAlreadyMapped = await sqlClient
+      .selectFrom("brand_vendor_map")
+      .where("brand_id", "=", brandId)
+      .where("product_id", "=", productId)
+      .select("vendor_id")
+      .execute();
+    const vendorsIdAlreadyMapped = getVendorsAlreadyMapped.map(
+      (v) => v.vendor_id
+    );
+
+    const vendors = await sqlClient
+      .selectFrom("vendors")
+      .where("id", "not in", vendorsIdAlreadyMapped)
+      .selectAll()
+      .execute();
+
+    return {
+      isSuccess: true,
+      vendors,
     };
   }
 }

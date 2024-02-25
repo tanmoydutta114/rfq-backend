@@ -200,6 +200,14 @@ export const ZRfqVendors = z.object({
     })
     .array(),
   emailBody: z.string(),
+  products: z
+    .object({
+      description: z.string(),
+      product: z.string(),
+      quantity: z.number(),
+      subProduct: z.string(),
+    })
+    .array(),
 });
 
 export const ZRfqCommentsReq = z.object({
@@ -208,6 +216,7 @@ export const ZRfqCommentsReq = z.object({
   }),
   fileRef: z.number().optional().nullable(),
   commenterType: z.number(),
+  rfqVendorId: z.number(),
 });
 
 export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>;

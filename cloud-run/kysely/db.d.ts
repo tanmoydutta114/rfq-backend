@@ -48,8 +48,8 @@ export interface FileStorage {
   file_id: string;
   file_name: string;
   file_type: string;
-  product_id: number | null;
   rfq_id: string | null;
+  rfq_vendor_id: number | null;
   vendor_id: number | null;
 }
 
@@ -126,6 +126,7 @@ export interface RfqComments {
   modified_on: Generated<Timestamp | null>;
   product_id: number | null;
   rfq_id: string | null;
+  rfq_vendor_id: number | null;
   vendor_id: number | null;
 }
 
@@ -160,7 +161,7 @@ export interface RfqVendors {
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   passcode: string | null;
-  product_id: number | null;
+  product_id: Json[] | null;
   responded_on: Timestamp | null;
   rfq_id: string | null;
   vendor_id: number | null;
