@@ -588,14 +588,14 @@ export class rfqSqlOps {
 
   static async getRFQVendorsByBrandAndRfq(
     sqlClient: Kysely<DB>,
-    rfqId: string,
-    brandId: number
+    rfqId: string
+    // brandId: number
   ) {
     const vendors = await sqlClient
       .selectFrom("rfq_vendors as rv")
       .leftJoin("vendors as v", "v.id", "rv.vendor_id")
       .where("rv.rfq_id", "=", rfqId)
-      .where("rv.brand_id", "=", brandId)
+      // .where("rv.brand_id", "=", brandId) No need for brand id cause rfq is unique to brand
       .select(["v.name", "v.id", "rv.product_id", "rv.id as rfqVendorId"])
       .execute();
 

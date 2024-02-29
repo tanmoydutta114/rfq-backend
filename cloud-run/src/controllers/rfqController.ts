@@ -232,12 +232,12 @@ export class rfqController {
   static async getVendorsByRfqIdAndBrand(req: Request) {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const brandId = Number(req.params.brandId);
+    // const brandId = Number(req.params.brandId);
 
     const response = await rfqSqlOps.getRFQVendorsByBrandAndRfq(
       sqlClient,
-      rfqId,
-      brandId
+      rfqId
+      // brandId
     );
     return response;
   }

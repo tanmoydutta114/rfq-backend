@@ -297,7 +297,7 @@ app.get(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/brands/:brandId/vendors", // New Api to get the list of vendors for comments
+  "/api/rfqs/:rfqIdvendors", // New Api to get the list of vendors for comments
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getVendorsByRfqIdAndBrand)
