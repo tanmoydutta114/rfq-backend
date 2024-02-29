@@ -292,4 +292,8 @@ export class rfqController {
     );
     return response;
   }
+  static async rfqBrandWiseCount(req: Request) {
+    const sqlClient = getSQLClient();
+    return await rfqSqlOps.rfqBrandWiseCount(sqlClient);
+  }
 }

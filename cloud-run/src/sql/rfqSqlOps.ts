@@ -693,4 +693,30 @@ export class rfqSqlOps {
       vendors,
     };
   }
+
+  static async rfqBrandWiseCount(sqlClient: Kysely<DB>) {
+    const rfqData = await sql<RfqCountSql>`
+      SELECT
+    b.name AS brand_name,
+    b.id AS brand_id,
+    COUNT(rp.rfq_id) AS total_rfq,
+        jsonb_agg(jsonb_build_object('is_finished', r.is_finished, 'rfq_id', r.rfq_id)) AS rfq_details
+    FROM
+        rfq_products AS rp
+    LEFT JOIN
+        brands AS b ON rp.brand_id = b.id
+    LEFT JOIN
+        rfqs AS r ON rp.rfq_id = r.rfq_id
+    GROUP BY
+        b.name, b.id;
+    `.execute(sqlClient);
+    return rfqData.rows;
+  }
+}
+
+interface RfqCountSql {
+  brand_name: string | null;
+  brand_id: string | null;
+  total_rfq: number | null;
+  rfq_details: { rfq_id: string; is_finished: boolean }[];
 }

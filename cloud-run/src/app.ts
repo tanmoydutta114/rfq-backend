@@ -238,6 +238,12 @@ app.get(
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.rfqCount)
 );
+app.get(
+  "/api/rfqs/brand/count",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.rfqBrandWiseCount)
+);
 
 // Deprecated
 app.post(
