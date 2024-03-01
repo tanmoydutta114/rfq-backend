@@ -389,7 +389,7 @@ app.delete(
 );
 
 app.get(
-  "/api/rfqs/:rfqId/brands/:brandId/products", // NEW api to get the products for RFQ
+  "/api/rfqs/:rfqId/brands/:brandId/products/unique", // NEW api to get the products for RFQ
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getRfqProducts)
