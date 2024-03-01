@@ -190,7 +190,8 @@ export class rfqSqlOps {
       requestBody.pageNo = 1;
     }
     const total_rfqs = await sqlClient
-      .selectFrom("rfqs")
+      .selectFrom("rfqs as r")
+      .leftJoin("rfq_products as rp", "r.rfq_id", "rp.rfq_id")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
           eb.or([eb("rfq_id", "ilike", `%${requestBody.searchStr}%` as string)])
@@ -203,7 +204,8 @@ export class rfqSqlOps {
     const OFFSET = PAGE_SIZE * (requestBody.pageNo - 1);
 
     const rfqs = await sqlClient
-      .selectFrom("rfqs")
+      .selectFrom("rfqs as r")
+      .leftJoin("rfq_products as rp", "r.rfq_id", "rp.rfq_id")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
           eb.or([eb("rfq_id", "ilike", `%${requestBody.searchStr}%` as string)])
@@ -212,7 +214,7 @@ export class rfqSqlOps {
       .orderBy(requestBody.sort.path, requestBody.sort.direction)
       .limit(PAGE_SIZE)
       .offset(OFFSET)
-      .select(["rfq_id", "is_finished", "created_on"])
+      .select(["r.rfq_id", "r.is_finished", "r.created_on", "rp.brand_id"])
       .execute();
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
