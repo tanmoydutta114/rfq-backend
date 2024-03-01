@@ -623,7 +623,7 @@ export class rfqSqlOps {
       .selectFrom("brand_vendor_map as bvm")
       .leftJoin("vendors as v", "v.id", "bvm.vendor_id")
       .where("bvm.brand_id", "=", brandId.brand_id)
-      .select(["v.name", "v.id", "bvm.product_id"])
+      .select(["v.name", "v.id", "bvm.product_id", "v.email"])
       .distinctOn("v.id")
       .execute();
 
