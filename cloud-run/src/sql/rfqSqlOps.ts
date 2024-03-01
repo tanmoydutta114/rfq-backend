@@ -14,6 +14,8 @@ import { createDate, generateId } from "../utils/utils";
 import { Log } from "../utils/Log";
 import { emailController } from "../controllers/emailController";
 import { productsSqlOps } from "./productsSqlOps";
+import { HttpError } from "../utils/HttpError";
+import { HttpStatusCode } from "../utils/HttpStatusCodes";
 
 export class rfqSqlOps {
   static async storeNewRfqs(
@@ -597,6 +599,32 @@ export class rfqSqlOps {
       .where("rv.rfq_id", "=", rfqId)
       // .where("rv.brand_id", "=", brandId) No need for brand id cause rfq is unique to brand
       .select(["v.name", "v.id", "rv.product_id", "rv.id as rfqVendorId"])
+      .execute();
+
+    return {
+      isSuccess: true,
+      vendors,
+    };
+  }
+  static async getVendorsByRfqIdForAllProductOfBrand(
+    sqlClient: Kysely<DB>,
+    rfqId: string
+  ) {
+    const brandId = await sqlClient
+      .selectFrom("rfq_products")
+      .where("rfq_id", "=", rfqId)
+      .select("brand_id")
+      .executeTakeFirst();
+    if (!brandId || !brandId.brand_id) {
+      throw new HttpError(HttpStatusCode.NOT_FOUND, `Brand ID Not Found`);
+    }
+    // console.log(brandId);
+    const vendors = await sqlClient
+      .selectFrom("brand_vendor_map as bvm")
+      .leftJoin("vendors as v", "v.id", "bvm.vendor_id")
+      .where("bvm.brand_id", "=", brandId.brand_id)
+      .select(["v.name", "v.id", "bvm.product_id"])
+      .distinctOn("v.id")
       .execute();
 
     return {

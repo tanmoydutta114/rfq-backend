@@ -310,6 +310,13 @@ app.get(
 );
 
 app.get(
+  "/api/rfqs/:rfqId/brands/all-vendors", // New Api to get the list of vendors for all product of a brand.
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(rfqController.getVendorsByRfqIdForAllProductOfBrand)
+);
+
+app.get(
   "/api/rfqs/:rfqId/products/:productId/vendors",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({

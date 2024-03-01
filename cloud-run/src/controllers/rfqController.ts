@@ -241,6 +241,16 @@ export class rfqController {
     );
     return response;
   }
+  static async getVendorsByRfqIdForAllProductOfBrand(req: Request) {
+    const sqlClient = getSQLClient();
+    const rfqId = req.params.rfqId;
+
+    const response = await rfqSqlOps.getVendorsByRfqIdForAllProductOfBrand(
+      sqlClient,
+      rfqId
+    );
+    return response;
+  }
 
   static async getRFQProductsByBrandAndRfq(req: Request) {
     const sqlClient = getSQLClient();
