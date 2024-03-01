@@ -344,7 +344,7 @@ app.get(
 );
 
 app.post(
-  "/api/rfqs/:rfqId/products/:productId/vendors/:vendorId/brands/:brandId/comment",
+  "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/comment",
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZRfqCommentsReq }],

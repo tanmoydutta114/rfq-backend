@@ -152,7 +152,7 @@ export class rfqController {
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const reqBody: IRfqCommentsReq = req.body;
-    const rfqVendorId = Number(reqBody);
+    const rfqVendorId = Number(reqBody.rfqVendorId);
 
     const response = await rfqSqlOps.storeRfqComments(
       sqlCLient,
