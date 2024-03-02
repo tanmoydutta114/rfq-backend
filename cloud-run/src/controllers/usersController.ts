@@ -14,6 +14,7 @@ export class usersController {
     const sqlClient = getSQLClient();
     const userId = req.user?.uid ?? "";
     const userInfo = await usersSqlOps.getUserDetails(sqlClient, userId);
+    return userInfo;
   }
 
   static async createUser(req: Request) {
