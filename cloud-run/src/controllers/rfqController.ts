@@ -11,6 +11,7 @@ import { rfqSqlOps } from "../sql/rfqSqlOps";
 import { HttpError } from "../utils/HttpError";
 import { HttpStatusCode } from "../utils/HttpStatusCodes";
 import { Json, JsonArray } from "../../kysely/db";
+import * as Papa from "papaparse";
 
 export class rfqController {
   static async storeNewRfqs(req: Request) {
@@ -198,6 +199,31 @@ export class rfqController {
       brandId
     );
     return response;
+  }
+
+  static async getCommentsCSV(req: Request, res: Response) {
+    const sqlCLient = getSQLClient();
+    const rfqId = req.params.rfqId;
+    const rfqVendorId = Number(req.params.rfqVendorId);
+    const vendorId = Number(req.params.vendorId);
+    const brandId = Number(req.params.brandId);
+    const response = await rfqSqlOps.getRfqComments(
+      sqlCLient,
+      rfqId,
+      rfqVendorId,
+      vendorId,
+      brandId
+    );
+
+    const commentList = response.comments;
+    const csv = Papa.unparse(commentList);
+
+    res.setHeader("Content-Type", `application/csv`);
+    res.setHeader("Content-Disposition", `attachment; filename=chat.csv`);
+
+    res.status(200).send(csv);
+
+    return csv;
   }
 
   static async getRfqProductWiseVendors(req: Request) {

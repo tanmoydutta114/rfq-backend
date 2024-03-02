@@ -359,6 +359,13 @@ app.get(
   callableWrapper(rfqController.getComments)
 );
 
+app.get(
+  "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/comments/export",
+  ApiUtility.checkUserAuth({ accessType: "external" }),
+  checkPermissionAndReqSchema({}),
+  rfqController.getCommentsCSV
+);
+
 app.post(
   "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/:commenterType/file-upload",
   upload.single("file"),

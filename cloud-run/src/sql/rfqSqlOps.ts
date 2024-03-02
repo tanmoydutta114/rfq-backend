@@ -16,6 +16,7 @@ import { emailController } from "../controllers/emailController";
 import { productsSqlOps } from "./productsSqlOps";
 import { HttpError } from "../utils/HttpError";
 import { HttpStatusCode } from "../utils/HttpStatusCodes";
+import Papa from "papaparse";
 
 export class rfqSqlOps {
   static async storeNewRfqs(
