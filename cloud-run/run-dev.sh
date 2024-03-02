@@ -8,5 +8,5 @@ export RUN_MODE="prod"
 export TEST_EMAIL="tanmoy.dutta@gmail.com"
 export TEST_UID="2NASmmNxIVdrfPyQodbOyOEWRzQ2"
 export PAGE_SIZE=40
-export POSTMARK_ID="1590b772-9373-404f-8750-049428a6751a"
+export POSTMARK_ID="ef1804b3-e6fe-49f6-9402-50eedf19d93f"
 yarn start-dev

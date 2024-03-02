@@ -702,19 +702,23 @@ export class rfqSqlOps {
     brandId: number,
     productId: number
   ) {
+    console.log(`Here`);
     const getVendorsAlreadyMapped = await sqlClient
       .selectFrom("brand_vendor_map")
       .where("brand_id", "=", brandId)
       .where("product_id", "=", productId)
       .select("vendor_id")
       .execute();
-    const vendorsIdAlreadyMapped = getVendorsAlreadyMapped.map(
-      (v) => v.vendor_id
-    );
+    const vendorsIdAlreadyMapped = getVendorsAlreadyMapped
+      .filter((v) => v.vendor_id !== null) // Filter out null values
+      .map((v) => v.vendor_id);
+    console.log(vendorsIdAlreadyMapped);
 
     const vendors = await sqlClient
       .selectFrom("vendors")
-      .where("id", "not in", vendorsIdAlreadyMapped)
+      .$if(vendorsIdAlreadyMapped.length > 0, (eb) =>
+        eb.where("id", "not in", vendorsIdAlreadyMapped)
+      )
       .selectAll()
       .execute();
 
