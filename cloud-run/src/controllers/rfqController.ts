@@ -314,6 +314,7 @@ export class rfqController {
     const sqlClient = getSQLClient();
     const rfqId = req.params.rfqId;
     const response = await rfqSqlOps.getRfqCount(sqlClient);
+    // console.log(response);
     return response;
   }
 

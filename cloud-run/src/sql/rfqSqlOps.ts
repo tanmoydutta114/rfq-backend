@@ -731,11 +731,13 @@ export class rfqSqlOps {
 
   static async rfqBrandWiseCount(sqlClient: Kysely<DB>) {
     const rfqData = await sql<RfqCountSql>`
-      SELECT
+     SELECT
     b.name AS brand_name,
     b.id AS brand_id,
     COUNT(rp.rfq_id) AS total_rfq,
-        jsonb_agg(jsonb_build_object('is_finished', r.is_finished, 'rfq_id', r.rfq_id)) AS rfq_details
+    COUNT(CASE WHEN r.is_finished = true THEN 1 END) AS finished_rfq_count,
+    COUNT(CASE WHEN r.is_finished = false THEN 1 END) AS not_finished_rfq_count,
+    jsonb_agg(jsonb_build_object('is_finished', r.is_finished, 'rfq_id', r.rfq_id)) AS rfq_details
     FROM
         rfq_products AS rp
     LEFT JOIN
@@ -743,7 +745,7 @@ export class rfqSqlOps {
     LEFT JOIN
         rfqs AS r ON rp.rfq_id = r.rfq_id
     GROUP BY
-        b.name, b.id;
+        b.name, b.id;;
     `.execute(sqlClient);
     return rfqData.rows;
   }
@@ -753,5 +755,7 @@ interface RfqCountSql {
   brand_name: string | null;
   brand_id: string | null;
   total_rfq: number | null;
+  finished_rfq_count: number | null;
+  not_finished_rfq_count: number | null;
   rfq_details: { rfq_id: string; is_finished: boolean }[];
 }
