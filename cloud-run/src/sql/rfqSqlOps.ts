@@ -156,10 +156,11 @@ export class rfqSqlOps {
 
         const vendorEmailBody = emailBody
           .replace("##vendorName##", vendor.name)
-          .replace("##commentsLink##", password)
-          .replace(":vendorId", vendor.id.toString())
-          .replace(":rfqVendorId", password);
-        console.log(vendorEmailBody);
+          .replace(
+            "++commentsLink++",
+            `http://localhost:8080/rfqComments/${rfqId}/brand/${brandId}/vendors/${vendor.id}/rfqVendorId/${password}`
+          );
+
         // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
         //   vendor.email,
         // ]);
@@ -174,7 +175,9 @@ export class rfqSqlOps {
         console.log(vendorEmailBody);
       });
     });
-    await Promise.all(addRfqProducts);
+
+    //localhost:8080/rfqComments/undefined/brand/NaN/vendors/:vendorId/rfqVendorId/:rfqVendorId
+    http: await Promise.all(addRfqProducts);
     Log.i(`Email sent to all the vendors...`);
     return {
       iSuccess: true,
