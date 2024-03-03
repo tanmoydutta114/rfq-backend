@@ -390,9 +390,9 @@ export class rfqSqlOps {
       .where("vendor_id", "=", vendorId)
       .where("brand_id", "=", brandId)
       .orderBy("rc.created_on asc")
-      .select(["rc.comment", "rc.created_on", "rc.rfq_id"])
-      .select(["v.name"])
-      .selectAll("u")
+      .select(["rc.comment", "rc.created_on", "rc.rfq_id", "rc.commenter_type"])
+      .select(["v.name as vendor_name"])
+      .select("u.name as commenter_name")
       .execute();
     console.log(comments);
     const flattenedData = comments.map((comment) => {
@@ -403,6 +403,10 @@ export class rfqSqlOps {
       return {
         ...comment,
         comment: message,
+        commenter_name:
+          comment.commenter_type === 1
+            ? comment.vendor_name
+            : comment.commenter_name,
       };
     });
 
