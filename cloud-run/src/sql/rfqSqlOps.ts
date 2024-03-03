@@ -139,6 +139,7 @@ export class rfqSqlOps {
         const [recordId] = await transaction
           .insertInto("rfq_vendors")
           .values({
+            id: password,
             rfq_id: rfqId,
             product_id: productId,
             passcode: password,
@@ -155,7 +156,10 @@ export class rfqSqlOps {
 
         const vendorEmailBody = emailBody
           .replace("##vendorName##", vendor.name)
-          .replace("##commentsLink##", password);
+          .replace("##commentsLink##", password)
+          .replace(":vendorId", vendor.id.toString())
+          .replace(":rfqVendorId", password);
+        console.log(vendorEmailBody);
         // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
         //   vendor.email,
         // ]);
@@ -305,7 +309,7 @@ export class rfqSqlOps {
     sqlClient: Kysely<DB>,
     userId: string,
     rqfId: string,
-    rfqVendorId: number,
+    rfqVendorId: string,
     vendorId: number,
     brandId: number,
     reqBody: IRfqCommentsReq
@@ -349,7 +353,7 @@ export class rfqSqlOps {
   static async getRfqComments(
     sqlClient: Kysely<DB>,
     rfqId: string,
-    rfqVendorId: number,
+    rfqVendorId: string,
     vendorId: number,
     brandId: number
   ) {
@@ -376,7 +380,7 @@ export class rfqSqlOps {
   static async getRfqCommentsExport(
     sqlClient: Kysely<DB>,
     rfqId: string,
-    rfqVendorId: number,
+    rfqVendorId: string,
     vendorId: number,
     brandId: number
   ) {
@@ -433,7 +437,7 @@ export class rfqSqlOps {
     fileType: string,
     fileData: Buffer,
     rfqId: string,
-    rfqVendorId: number,
+    rfqVendorId: string,
     vendorId: number,
     brandId: number,
     commenterType: number
@@ -464,7 +468,7 @@ export class rfqSqlOps {
   static async getFileList(
     sqlClient: Kysely<DB>,
     rfqId: string,
-    rfqVendorId: number,
+    rfqVendorId: string,
     vendorId: number,
     brandId: number
   ) {

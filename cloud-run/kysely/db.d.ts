@@ -49,7 +49,7 @@ export interface FileStorage {
   file_name: string;
   file_type: string;
   rfq_id: string | null;
-  rfq_vendor_id: number | null;
+  rfq_vendor_id: string | null;
   vendor_id: number | null;
 }
 
@@ -121,12 +121,12 @@ export interface RfqComments {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   file_ref: Int8 | null;
-  id: Generated<number>;
+  id: Generated<string>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   product_id: number | null;
   rfq_id: string | null;
-  rfq_vendor_id: number | null;
+  rfq_vendor_id: string | null;
   vendor_id: number | null;
 }
 
@@ -157,7 +157,7 @@ export interface RfqVendors {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   email_sent_on: Timestamp | null;
-  id: Generated<number>;
+  id: Generated<string>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   passcode: string | null;

@@ -216,7 +216,7 @@ export const ZRfqCommentsReq = z.object({
   }),
   fileRef: z.number().optional().nullable(),
   commenterType: z.number(),
-  rfqVendorId: z.number(),
+  rfqVendorId: z.string(),
 });
 
 export type IRfqStoreReq = z.infer<typeof ZRfqStoreReq>;

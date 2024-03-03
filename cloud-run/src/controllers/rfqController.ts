@@ -77,7 +77,7 @@ export class rfqController {
     const sqlCLient = getSQLClient();
     const fileData = req.file;
     const rfqId = req.params.rfqId;
-    const rfqVendorId = Number(req.params.rfqVendorId);
+    const rfqVendorId = req.params.rfqVendorId;
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const commenterType = Number(req.params.commenterType);
@@ -107,7 +107,7 @@ export class rfqController {
   static async getFiles(req: Request) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const rfqVendorId = Number(req.params.rfqVendorId);
+    const rfqVendorId = req.params.rfqVendorId;
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
 
@@ -155,7 +155,7 @@ export class rfqController {
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const reqBody: IRfqCommentsReq = req.body;
-    const rfqVendorId = Number(reqBody.rfqVendorId);
+    const rfqVendorId = reqBody.rfqVendorId;
 
     const response = await rfqSqlOps.storeRfqComments(
       sqlCLient,
@@ -190,7 +190,7 @@ export class rfqController {
   static async getComments(req: Request) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const rfqVendorId = Number(req.params.rfqVendorId);
+    const rfqVendorId = req.params.rfqVendorId;
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const response = await rfqSqlOps.getRfqComments(
@@ -206,7 +206,7 @@ export class rfqController {
   static async getCommentsCSV(req: Request, res: Response) {
     const sqlCLient = getSQLClient();
     const rfqId = req.params.rfqId;
-    const rfqVendorId = Number(req.params.rfqVendorId);
+    const rfqVendorId = req.params.rfqVendorId;
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
     const response = await rfqSqlOps.getRfqCommentsExport(
