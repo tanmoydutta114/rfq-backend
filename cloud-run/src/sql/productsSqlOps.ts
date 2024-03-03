@@ -538,6 +538,7 @@ export class productsSqlOps {
       brand_id: number;
       product_id: number | null;
       sub_product_id: number | null;
+      product_description: string | null;
     }[]
   ): ICategoriesDataSchema {
     let organizedData: ICategoriesDataSchema = {} as ICategoriesDataSchema;
@@ -571,6 +572,7 @@ export class productsSqlOps {
         brand.products.push({
           id: productId,
           name: productName.toString(),
+          productDescription: item.product_description,
           subProducts: [],
         });
       }
@@ -646,6 +648,7 @@ export class productsSqlOps {
         "b.id as brand_id",
         "p.id as product_id",
         "sp.id as sub_product_id",
+        "p.description as product_description",
       ])
       .execute();
 

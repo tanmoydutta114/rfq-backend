@@ -60,7 +60,7 @@ export class usersSqlOps {
       .where("firebase_user_id", "=", userId)
       .select(["name", "email", "id"])
       .execute();
-    if (userInfo.length > 0) {
+    if (userInfo.length < 1) {
       return { isSuccess: false, userInfo: null };
     }
     return { isSuccess: true, useInfo: userInfo[0] };

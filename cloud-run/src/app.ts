@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
   res.send(`Hello from cloud run!`);
 });
 
-app.post(
+app.get(
   "/api/get-user",
   ApiUtility.checkUserAuth({}),
   callableWrapper(usersController.getUser)
