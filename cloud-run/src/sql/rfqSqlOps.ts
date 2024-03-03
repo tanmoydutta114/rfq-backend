@@ -341,6 +341,11 @@ export class rfqSqlOps {
     };
   }
 
+  static extractTextFromHTML(html: string): string {
+    // Regular expression to match HTML tags and extract text content
+    return html.replace(/<[^>]*>?/gm, "");
+  }
+
   static async getRfqComments(
     sqlClient: Kysely<DB>,
     rfqId: string,
@@ -352,6 +357,7 @@ export class rfqSqlOps {
     const comments = await sqlClient
       .selectFrom("rfq_comments as rc")
       .leftJoin("vendors as v", "rc.vendor_id", "v.id")
+      .leftJoin("users as u", "rc.created_by", "u.firebase_user_id")
       .where("rfq_id", "=", rfqId)
       .where("rc.rfq_vendor_id", "=", rfqVendorId)
       .where("vendor_id", "=", vendorId)
@@ -359,10 +365,50 @@ export class rfqSqlOps {
       .orderBy("rc.created_on asc")
       .selectAll("rc")
       .select(["v.name"])
+      .select(["u.name as commenter_name"])
       .execute();
     return {
       isSuccess: true,
       comments: comments,
+    };
+  }
+
+  static async getRfqCommentsExport(
+    sqlClient: Kysely<DB>,
+    rfqId: string,
+    rfqVendorId: number,
+    vendorId: number,
+    brandId: number
+  ) {
+    console.log(brandId);
+    const comments = await sqlClient
+      .selectFrom("rfq_comments as rc")
+      .leftJoin("vendors as v", "rc.vendor_id", "v.id")
+      .leftJoin("users as u", "rc.created_by", "u.firebase_user_id")
+      .where("rfq_id", "=", rfqId)
+      .where("rc.rfq_vendor_id", "=", rfqVendorId)
+      .where("vendor_id", "=", vendorId)
+      .where("brand_id", "=", brandId)
+      .orderBy("rc.created_on asc")
+      .select(["rc.comment", "rc.created_on", "rc.rfq_id"])
+      .select(["v.name"])
+      .selectAll("u")
+      .execute();
+    console.log(comments);
+    const flattenedData = comments.map((comment) => {
+      console.log(comment.comment);
+      const com = comment.comment as { message: string };
+      const message =
+        comment.comment && rfqSqlOps.extractTextFromHTML(com.message);
+      return {
+        ...comment,
+        comment: message,
+      };
+    });
+
+    return {
+      isSuccess: true,
+      comments: flattenedData,
     };
   }
 

@@ -361,6 +361,7 @@ app.get(
 
 app.get(
   "/api/rfqs/:rfqId/rfqVendorId/:rfqVendorId/vendors/:vendorId/brands/:brandId/comments/export",
+  upload.single("file"),
   ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   rfqController.getCommentsCSV

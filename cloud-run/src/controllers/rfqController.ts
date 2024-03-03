@@ -13,6 +13,8 @@ import { HttpStatusCode } from "../utils/HttpStatusCodes";
 import { Json, JsonArray } from "../../kysely/db";
 import * as Papa from "papaparse";
 
+import { Readable } from "stream";
+
 export class rfqController {
   static async storeNewRfqs(req: Request) {
     const sqlClient = getSQLClient();
@@ -207,7 +209,7 @@ export class rfqController {
     const rfqVendorId = Number(req.params.rfqVendorId);
     const vendorId = Number(req.params.vendorId);
     const brandId = Number(req.params.brandId);
-    const response = await rfqSqlOps.getRfqComments(
+    const response = await rfqSqlOps.getRfqCommentsExport(
       sqlCLient,
       rfqId,
       rfqVendorId,
@@ -218,12 +220,10 @@ export class rfqController {
     const commentList = response.comments;
     const csv = Papa.unparse(commentList);
 
-    res.setHeader("Content-Type", `application/csv`);
-    res.setHeader("Content-Disposition", `attachment; filename=chat.csv`);
-
-    res.status(200).send(csv);
-
-    return csv;
+    res.header("Content-Type", "text/csv");
+    res.header("Content-Disposition", "attachment; filename=data.csv");
+    res.attachment("csv.csv");
+    return res.status(200).send(csv);
   }
 
   static async getRfqProductWiseVendors(req: Request) {
