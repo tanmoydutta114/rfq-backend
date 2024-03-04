@@ -6,6 +6,10 @@ import {
   UserStatus,
 } from "../utils/types";
 import { createDate } from "../utils/utils";
+import { getAuth } from "firebase-admin/auth";
+import { HttpError } from "../utils/HttpError";
+import { HttpStatusCode } from "../utils/HttpStatusCodes";
+import { Log } from "../utils/Log";
 
 export class usersSqlOps {
   static async storeNewUserInFirebaseUsersTable(
@@ -64,5 +68,40 @@ export class usersSqlOps {
       return { isSuccess: false, userInfo: null };
     }
     return { isSuccess: true, useInfo: userInfo[0] };
+  }
+  static async getUsers(sqlClient: Kysely<DB>) {
+    const users = await sqlClient
+      .selectFrom("users")
+      .select(["name", "email", "id"])
+      .execute();
+    return users;
+  }
+
+  static async deleteUser(sqlClient: Kysely<DB>, userId: number) {
+    return await sqlClient.transaction().execute(async (db) => {
+      const firebaseUserId = await db
+        .selectFrom("users")
+        .where("id", "=", userId)
+        .select("firebase_user_id")
+        .executeTakeFirst();
+
+      if (!firebaseUserId || !firebaseUserId.firebase_user_id) {
+        return new HttpError(HttpStatusCode.NOT_FOUND, `User Id not found`);
+      }
+
+      const users = await sqlClient
+        .deleteFrom("users")
+        .where("id", "=", userId)
+        .execute();
+
+      const deleteFromFirebase = await getAuth().deleteUser(
+        firebaseUserId.firebase_user_id
+      );
+      Log.i(`User deleted from Firebase Response ${deleteFromFirebase}`);
+      return {
+        isSuccess: true,
+        message: `Successfully deleted!`,
+      };
+    });
   }
 }

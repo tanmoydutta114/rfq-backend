@@ -2,6 +2,7 @@ import { Request } from "express";
 import { getSQLClient } from "../sql/database";
 import {
   ICreateUserReq,
+  IDeleteUserReq,
   IFirebaseUsersDetails,
   IUsersDetails,
 } from "../utils/types";
@@ -15,6 +16,17 @@ export class usersController {
     const userId = req.user?.uid ?? "";
     const userInfo = await usersSqlOps.getUserDetails(sqlClient, userId);
     return userInfo;
+  }
+  static async getUsers(req: Request) {
+    const sqlClient = getSQLClient();
+    const users = await usersSqlOps.getUsers(sqlClient);
+    return users;
+  }
+  static async deleteUser(req: Request) {
+    const sqlClient = getSQLClient();
+    const reqBody: IDeleteUserReq = req.body;
+    const users = await usersSqlOps.deleteUser(sqlClient, reqBody.userId);
+    return users;
   }
 
   static async createUser(req: Request) {

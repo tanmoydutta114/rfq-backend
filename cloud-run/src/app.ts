@@ -24,6 +24,7 @@ import {
   ZVendorLogin,
   ZBradsCreateReq,
   ZSubProductStore,
+  ZDeleteUserReq,
 } from "./utils/types";
 import { rolesController } from "./controllers/rolesController";
 import { productsController } from "./controllers/productsController";
@@ -433,6 +434,22 @@ app.post(
     zodValidation: [{ zodSchema: ZCreateUserReq }],
   }),
   callableWrapper(usersController.createUser)
+);
+
+app.get(
+  "/api/users",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(usersController.getUsers)
+);
+
+app.get(
+  "/api/users",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({
+    zodValidation: [{ zodSchema: ZDeleteUserReq }],
+  }),
+  callableWrapper(usersController.deleteUser)
 );
 
 // ========================= BRANDS =============================

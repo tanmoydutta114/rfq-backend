@@ -305,3 +305,8 @@ export const ZSubProductStore = z
   })
   .array();
 export type ISubProductStore = z.infer<typeof ZSubProductStore>;
+
+export const ZDeleteUserReq = z.object({
+  userId: z.number(),
+});
+export type IDeleteUserReq = z.infer<typeof ZDeleteUserReq>;
