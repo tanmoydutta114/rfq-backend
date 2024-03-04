@@ -443,7 +443,7 @@ app.get(
   callableWrapper(usersController.getUsers)
 );
 
-app.get(
+app.delete(
   "/api/users",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
