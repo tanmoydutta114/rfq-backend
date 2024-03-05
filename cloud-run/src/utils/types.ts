@@ -134,7 +134,7 @@ export const ZCreateUserReq = z.object({
   name: z.string(),
   email: z.string().email(),
   contact_no: z.string().optional().nullable(),
-  role_id: z.number(),
+  role_id: z.number().optional(),
 });
 
 const ZFirebaseUsersDetails = z.object({
