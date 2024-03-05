@@ -89,6 +89,11 @@ export class usersSqlOps {
         return new HttpError(HttpStatusCode.NOT_FOUND, `User Id not found`);
       }
 
+      const fusers = await sqlClient
+        .deleteFrom("firebase_users")
+        .where("firebase_user_id", "=", firebaseUserId.firebase_user_id)
+        .execute();
+
       const users = await sqlClient
         .deleteFrom("users")
         .where("id", "=", userId)

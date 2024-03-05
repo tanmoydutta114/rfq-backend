@@ -443,8 +443,8 @@ app.get(
   callableWrapper(usersController.getUsers)
 );
 
-app.get(
-  "/api/users",
+app.post(
+  "/api/delete-user",
   ApiUtility.checkUserAuth({}),
   checkPermissionAndReqSchema({
     zodValidation: [{ zodSchema: ZDeleteUserReq }],
