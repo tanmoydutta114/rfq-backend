@@ -305,7 +305,7 @@ app.get(
 
 app.get(
   "/api/rfqs/:rfqId/vendors", // New Api to get the list of vendors for comments
-  ApiUtility.checkUserAuth({}),
+  ApiUtility.checkUserAuth({ accessType: "external" }),
   checkPermissionAndReqSchema({}),
   callableWrapper(rfqController.getVendorsByRfqIdAndBrand)
 );
