@@ -121,7 +121,7 @@ export interface RfqComments {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   file_ref: Int8 | null;
-  id: Generated<string>;
+  id: Generated<number>;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   product_id: number | null;
@@ -197,7 +197,6 @@ export interface Users {
   modified_by: string | null;
   modified_on: Timestamp | null;
   name: string | null;
-  role_id: number | null;
   status: Generated<number | null>;
 }
 
@@ -223,6 +222,7 @@ export interface Vendors {
   modified_by: string | null;
   modified_on: Timestamp | null;
   name: string | null;
+  website: string | null;
 }
 
 export interface DB {

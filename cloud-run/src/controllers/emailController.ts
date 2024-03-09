@@ -32,13 +32,13 @@ export class emailController {
     Log.i(`Customer Email Address is ${emailAddresses.join(", ")}') `);
 
     if (utility.ApiUtility.isDev()) {
-      to = ["tanmoy.dutta@witbybit.com", "suryadipta@witbybit.com"];
-      from = "xepag74986@rentaen.com";
-      ccOReply = ["tanmoy.dutta@witbybit.com", "suryadipta@witbybit.com"];
+      to = ["tanmoy.dutta@gztech.in"];
+      from = "tanmoy.dutta@gztech.in";
+      ccOReply = ["tanmoy.dutta@gztech.in"];
     } else {
-      to = ["tanmoy.dutta@witbybit.com"];
-      from = "xepag74986@rentaen.com";
-      ccOReply = ["tanmoy.dutta@witbybit.com"];
+      to = ["tanmoy.dutta@gztech.in"];
+      from = "tanmoy.dutta@gztech.in";
+      ccOReply = ["tanmoy.dutta@gztech.in"];
     }
     const client = new postmark.Client(process.env.POSTMARK_ID as string);
 

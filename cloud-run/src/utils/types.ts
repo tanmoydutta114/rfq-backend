@@ -117,6 +117,7 @@ export const ZVenderCreateReq = z.object({
   }),
   contactNo: z.string().optional().nullable(),
   productCategories: ZCategoryType.array().optional().nullable(),
+  website: z.string().optional().nullable(),
 });
 
 export const ZVendorAddProductReq = z.object({
@@ -134,7 +135,6 @@ export const ZCreateUserReq = z.object({
   name: z.string(),
   email: z.string().email(),
   contact_no: z.string().optional().nullable(),
-  role_id: z.number().optional(),
 });
 
 const ZFirebaseUsersDetails = z.object({

@@ -47,7 +47,6 @@ export class usersController {
     const firebaseUserDetails = await usersController.createFirebaseUser(
       reqBody.name,
       reqBody.email,
-      reqBody.role_id ?? 2,
       reqBody.contact_no
     );
     Log.i(
@@ -131,7 +130,6 @@ export class usersController {
   static async createFirebaseUser(
     userName: string,
     email: string,
-    roleId: number,
     contactNo?: string | null
   ) {
     const userDate = {
@@ -144,7 +142,7 @@ export class usersController {
     const newUserUID = response.uid;
 
     const customClaims = {
-      ut: roleId,
+      ut: "2",
     };
     await getAuth().setCustomUserClaims(newUserUID, customClaims);
 

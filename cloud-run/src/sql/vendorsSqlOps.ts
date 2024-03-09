@@ -81,6 +81,7 @@ export class vendorsSqlOps {
           created_by: userId,
           modified_by: userId,
           address: reqBody.address as any,
+          website: reqBody.website ?? null,
         })
         .returning("id")
         .execute();

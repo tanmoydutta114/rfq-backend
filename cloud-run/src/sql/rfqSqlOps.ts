@@ -161,9 +161,9 @@ export class rfqSqlOps {
             `http://localhost:8080/rfqComments/${rfqId}/brand/${brandId}/vendors/${vendor.id}/rfqVendorId/${password}`
           );
 
-        // await emailController.sendEmail(vendorEmailBody, "emailSubject", [
-        //   vendor.email,
-        // ]);
+        await emailController.sendEmail(vendorEmailBody, "RFQ Details", [
+          vendor.email,
+        ]);
         await transaction
           .updateTable("rfq_vendors")
           .where("rfq_id", "=", rfqId)
