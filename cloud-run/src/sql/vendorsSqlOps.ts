@@ -51,7 +51,15 @@ export class vendorsSqlOps {
       .orderBy(requestBody.sort.path, requestBody.sort.direction)
       .limit(PAGE_SIZE)
       .offset(OFFSET)
-      .select(["id", "name", "contact_no", "email", "address", "created_on"])
+      .select([
+        "id",
+        "name",
+        "contact_no",
+        "email",
+        "address",
+        "created_on",
+        "website",
+      ])
       .execute();
 
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
