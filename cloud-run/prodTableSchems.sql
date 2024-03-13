@@ -230,3 +230,12 @@ CREATE TABLE file_storage (
 
 
 
+INSERT INTO firebase_users
+(firebase_user_id, user_name, user_email, created_on, contact_number)
+VALUES('nKLw6F1FJrahO6wzOk57ysg9xHD3', 'Suryadipta Sarkar', 'gremlin.sarkar@gmail.com', '2024-03-13 12:12:23.042', '+918697408525');
+
+INSERT INTO public.users
+(firebase_user_id, "name", email, contact_no, created_on, created_by, modified_on, modified_by, status)
+VALUES('nKLw6F1FJrahO6wzOk57ysg9xHD3', 'Suryadipta Sarkar', 'gremlin.sarkar@gmail.com', '+918697408525', 
+'2024-03-12 11:10:29.930', 'nKLw6F1FJrahO6wzOk57ysg9xHD3', '2024-03-12 11:10:29.930', 'nKLw6F1FJrahO6wzOk57ysg9xHD3', 0);	
+
