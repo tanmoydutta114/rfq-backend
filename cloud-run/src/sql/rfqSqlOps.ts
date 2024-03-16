@@ -158,7 +158,7 @@ export class rfqSqlOps {
           .replace("##vendorName##", vendor.name)
           .replace(
             "++commentsLink++",
-            `http://localhost:8080/rfqComments/${rfqId}/brand/${brandId}/vendors/${vendor.id}/rfqVendorId/${password}`
+            `https://rfq-prod-test.web.app/rfqComments/${rfqId}/brand/${brandId}/vendors/${vendor.id}/rfqVendorId/${password}`
           );
 
         await emailController.sendEmail(vendorEmailBody, "RFQ Details", [

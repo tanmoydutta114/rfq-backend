@@ -53,8 +53,8 @@ export class ApiUtility {
   static checkUserAuth(params) {
     return async (req: Request, res: Response, next: NextFunction) => {
       const isTestMode = process.env.RUN_MODE ?? false;
-      const accessType = params?.accessType;
-      console.log(params?.accessType);
+      const accessType = params?.accessType ?? "admin";
+      console.log(accessType);
       Log.i(`Checking authentication for ${req.url}`);
       try {
         if (isTestMode) {
@@ -63,7 +63,7 @@ export class ApiUtility {
             email: process.env.TEST_EMAIL,
           };
           req.claims = { ut: "a" };
-        } else if (params?.accessType !== "external") {
+        } else if (accessType !== "external") {
           const authHeader = req.headers["authorization"] as string;
           let authToken: string;
           if (authHeader?.split(" ")[0] === "Bearer") {
