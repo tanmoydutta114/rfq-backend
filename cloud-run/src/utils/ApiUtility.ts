@@ -75,6 +75,11 @@ export class ApiUtility {
               name: decodedToken.name,
             };
             req.claims = { ut: "a" };
+          } else {
+            Log.e(` checkUserAuth failed.`, null);
+            return res
+              .status(HttpStatusCode.UNAUTHORIZED)
+              .send(`Access not allowed token is missing.`);
           }
         } else {
           req.claims = { ut: "e" };
