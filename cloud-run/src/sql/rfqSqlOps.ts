@@ -241,7 +241,7 @@ export class rfqSqlOps {
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
 
     return {
-      uniqueData,
+      rfqs: uniqueData,
       hasMore,
       isSuccess: true,
     };
@@ -804,18 +804,22 @@ export class rfqSqlOps {
      SELECT
     b.name AS brand_name,
     b.id AS brand_id,
-    COUNT(rp.rfq_id) AS total_rfq,
-    COUNT(CASE WHEN r.is_finished = true THEN 1 END) AS finished_rfq_count,
-    COUNT(CASE WHEN r.is_finished = false THEN 1 END) AS not_finished_rfq_count,
-    jsonb_agg(jsonb_build_object('is_finished', r.is_finished, 'rfq_id', r.rfq_id)) AS rfq_details
-    FROM
-        rfq_products AS rp
-    LEFT JOIN
-        brands AS b ON rp.brand_id = b.id
-    LEFT JOIN
-        rfqs AS r ON rp.rfq_id = r.rfq_id
-    GROUP BY
-        b.name, b.id;;
+    COUNT(DISTINCT rp.rfq_id) AS total_rfq,
+    COUNT(DISTINCT CASE WHEN r.is_finished = true THEN rp.rfq_id END) AS finished_rfq_count,
+    COUNT(DISTINCT CASE WHEN r.is_finished = false THEN rp.rfq_id END) AS not_finished_rfq_count
+FROM
+    rfq_products AS rp
+LEFT JOIN
+    brands AS b ON rp.brand_id = b.id
+LEFT JOIN
+    rfqs AS r ON rp.rfq_id = r.rfq_id
+LEFT JOIN (
+    SELECT DISTINCT ON (rfq_id) rfq_id, jsonb_build_object('is_finished', is_finished, 'rfq_id', rfq_id) AS rfq_detail
+    FROM rfqs
+) AS rfq_details ON r.rfq_id = rfq_details.rfq_id
+GROUP BY
+    b.name, b.id;
+
     `.execute(sqlClient);
     return rfqData.rows;
   }
