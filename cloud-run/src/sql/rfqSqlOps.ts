@@ -199,7 +199,6 @@ export class rfqSqlOps {
     }
     const total_rfqs = await sqlClient
       .selectFrom("rfqs as r")
-      .leftJoin("rfq_products as rp", "r.rfq_id", "rp.rfq_id")
       .$if(!!requestBody.searchStr, (qb) =>
         qb.where((eb) =>
           eb.or([eb("rfq_id", "ilike", `%${requestBody.searchStr}%` as string)])
@@ -225,10 +224,24 @@ export class rfqSqlOps {
       .select(["r.rfq_id", "r.is_finished", "r.created_on", "rp.brand_id"])
       .execute();
 
+    const uniqueData: {
+      rfq_id: string;
+      is_finished: boolean | null;
+      created_on: Date | null;
+      brand_id: number | null;
+    }[] = [];
+    const uniqueRFQIds: Set<string> = new Set();
+    rfqs.forEach((item) => {
+      if (!uniqueRFQIds.has(item.rfq_id)) {
+        uniqueRFQIds.add(item.rfq_id);
+        uniqueData.push(item);
+      }
+    });
+
     const hasMore = OFFSET + PAGE_SIZE < totalCount ? true : false;
 
     return {
-      rfqs,
+      uniqueData,
       hasMore,
       isSuccess: true,
     };
