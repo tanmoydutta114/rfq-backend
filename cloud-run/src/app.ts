@@ -189,6 +189,12 @@ app.post(
   }),
   callableWrapper(vendorsController.storeVendorDetails)
 );
+app.post(
+  "/api/vendors/bulk",
+  ApiUtility.checkUserAuth({}),
+  checkPermissionAndReqSchema({}),
+  callableWrapper(vendorsController.storeVendorBulk)
+);
 
 app.post(
   "/api/query/vendors",

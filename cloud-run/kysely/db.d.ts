@@ -63,7 +63,7 @@ export interface FirebaseUsers {
 
 export interface Products {
   brand_id: number | null;
-  category_id: Generated<number | null>;
+  category_id: number | null;
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   description: string | null;
@@ -73,35 +73,6 @@ export interface Products {
   name: string;
   sub_category: number | null;
   sub_sub_category: number | null;
-}
-
-export interface ProductsCategory {
-  category_name: string | null;
-  created_by: string | null;
-  created_on: Generated<Timestamp | null>;
-  id: Generated<number>;
-  modified_by: string | null;
-  modified_on: Generated<Timestamp | null>;
-}
-
-export interface ProductsSubCategory {
-  category_name: string | null;
-  created_by: string | null;
-  created_on: Timestamp | null;
-  id: Generated<number>;
-  main_category_id: number | null;
-  modified_by: string | null;
-  modified_on: Timestamp | null;
-}
-
-export interface ProductsSubSubCategory {
-  category_name: string | null;
-  created_by: string | null;
-  created_on: Timestamp | null;
-  id: Generated<number>;
-  modified_by: string | null;
-  modified_on: Timestamp | null;
-  sub_category_id: number | null;
 }
 
 export interface ProductVendorMap {
@@ -157,7 +128,7 @@ export interface RfqVendors {
   created_by: string | null;
   created_on: Generated<Timestamp | null>;
   email_sent_on: Timestamp | null;
-  id: Generated<string>;
+  id: string;
   modified_by: string | null;
   modified_on: Generated<Timestamp | null>;
   passcode: string | null;
@@ -197,23 +168,13 @@ export interface Users {
   modified_by: string | null;
   modified_on: Timestamp | null;
   name: string | null;
+  role_id: number | null;
   status: Generated<number | null>;
-}
-
-export interface VendorCategoryMap {
-  category_id: number | null;
-  created_by: string | null;
-  created_on: Generated<Timestamp | null>;
-  id: Generated<number>;
-  modified_by: string | null;
-  modified_on: Generated<Timestamp | null>;
-  sub_category_id: number | null;
-  sub_sub_category_id: number | null;
-  vendor_id: number | null;
 }
 
 export interface Vendors {
   address: Json | null;
+  company_name: string | null;
   contact_no: string | null;
   created_by: string | null;
   created_on: Timestamp | null;
@@ -232,9 +193,6 @@ export interface DB {
   firebase_users: FirebaseUsers;
   product_vendor_map: ProductVendorMap;
   products: Products;
-  products_category: ProductsCategory;
-  products_sub_category: ProductsSubCategory;
-  products_sub_sub_category: ProductsSubSubCategory;
   rfq_comments: RfqComments;
   rfq_products: RfqProducts;
   rfq_vendors: RfqVendors;
@@ -242,6 +200,5 @@ export interface DB {
   roles: Roles;
   sub_products: SubProducts;
   users: Users;
-  vendor_category_map: VendorCategoryMap;
   vendors: Vendors;
 }

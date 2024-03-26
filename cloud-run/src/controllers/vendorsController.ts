@@ -30,6 +30,11 @@ export class vendorsController {
     );
     return response;
   }
+  static async storeVendorBulk(req: Request) {
+    const sqlClient = getSQLClient();
+    const response = await vendorsSqlOps.storeVendorsBulk(sqlClient);
+    return response;
+  }
 
   static async updateProduct(req: Request) {
     const sqlClient = getSQLClient();

@@ -118,6 +118,7 @@ export const ZVenderCreateReq = z.object({
   contactNo: z.string().optional().nullable(),
   productCategories: ZCategoryType.array().optional().nullable(),
   website: z.string().optional().nullable(),
+  companyName: z.string().optional().nullable(),
 });
 
 export const ZVendorAddProductReq = z.object({

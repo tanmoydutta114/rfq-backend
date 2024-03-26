@@ -13,4 +13,5 @@ gcloud run deploy rfq-backend-prod \
     --set-env-vars "DB_NAME=rfq-prod-test" \
     --set-env-vars "CLOUD_SQL_CONNECTION_NAME=/cloudsql/grand-kingdom-410705:us-central1:rfq-test" \
     --set-env-vars "DB_USER=postgres" \
-    --set-env-vars "DB_PASS=1aBequP67q3rFjat"
+    --set-env-vars "DB_PASS=1aBequP67q3rFjat" \
+    --set-env-vars "POSTMARK_ID=3c0f1623-a26b-4146-a7f4-5015fdbe9395"

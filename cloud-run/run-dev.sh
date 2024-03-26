@@ -1,5 +1,5 @@
 export DATABASE_URL="postgres://postgres:1aBequP67q3rFjat@34.132.234.98/rfq-test"
-export DB_NAME="rfq-test"
+export DB_NAME="rfq-prod-test"
 export DB_USER="postgres"
 export DB_PASS="1aBequP67q3rFjat"
 export CLOUD_SQL_CONNECTION_NAME="34.132.234.98"
