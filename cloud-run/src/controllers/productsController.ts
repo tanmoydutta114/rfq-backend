@@ -46,15 +46,15 @@ export class productsController {
     return response;
   }
 
-  static async getProductCategories(req: Request) {
-    const sqlCLient = getSQLClient();
-    const reqBody: IProductCategoriesFetchReqBody = req.body;
-    const response = await productsSqlOps.getProductCategories(
-      sqlCLient,
-      reqBody
-    );
-    return response;
-  }
+  // static async getProductCategories(req: Request) {
+  //   const sqlCLient = getSQLClient();
+  //   const reqBody: IProductCategoriesFetchReqBody = req.body;
+  //   const response = await productsSqlOps.getProductCategories(
+  //     sqlCLient,
+  //     reqBody
+  //   );
+  //   return response;
+  // }
 
   static async getProductBrands(req: Request) {
     const sqlCLient = getSQLClient();
@@ -69,44 +69,44 @@ export class productsController {
     return response;
   }
 
-  static async storeProductMainCategories(req: Request) {
-    const sqlCLient = getSQLClient();
-    const userId = req.user?.uid ?? "";
-    const reqBody: { name: string } = req.body;
-    const response = await productsSqlOps.storeMainCategory(
-      sqlCLient,
-      userId,
-      reqBody.name
-    );
-    return response;
-  }
-  static async storeProductSubCategories(req: Request) {
-    const sqlCLient = getSQLClient();
-    const userId = req.user?.uid ?? "";
-    const mainCategoryId = Number(req.params.mainCategoryId);
-    const reqBody: { name: string } = req.body;
+  // static async storeProductMainCategories(req: Request) {
+  //   const sqlCLient = getSQLClient();
+  //   const userId = req.user?.uid ?? "";
+  //   const reqBody: { name: string } = req.body;
+  //   const response = await productsSqlOps.storeMainCategory(
+  //     sqlCLient,
+  //     userId,
+  //     reqBody.name
+  //   );
+  //   return response;
+  // }
+  // static async storeProductSubCategories(req: Request) {
+  //   const sqlCLient = getSQLClient();
+  //   const userId = req.user?.uid ?? "";
+  //   const mainCategoryId = Number(req.params.mainCategoryId);
+  //   const reqBody: { name: string } = req.body;
 
-    const response = await productsSqlOps.storeSubCategory(
-      sqlCLient,
-      userId,
-      mainCategoryId,
-      reqBody.name
-    );
-    return response;
-  }
-  static async storeProductSubSubCategories(req: Request) {
-    const sqlCLient = getSQLClient();
-    const userId = req.user?.uid ?? "";
-    const subCategoryId = Number(req.params.subCategoryId);
-    const reqBody: { name: string } = req.body;
-    const response = await productsSqlOps.storeSubSubCategory(
-      sqlCLient,
-      userId,
-      subCategoryId,
-      reqBody.name
-    );
-    return response;
-  }
+  //   const response = await productsSqlOps.storeSubCategory(
+  //     sqlCLient,
+  //     userId,
+  //     mainCategoryId,
+  //     reqBody.name
+  //   );
+  //   return response;
+  // }
+  // static async storeProductSubSubCategories(req: Request) {
+  //   const sqlCLient = getSQLClient();
+  //   const userId = req.user?.uid ?? "";
+  //   const subCategoryId = Number(req.params.subCategoryId);
+  //   const reqBody: { name: string } = req.body;
+  //   const response = await productsSqlOps.storeSubSubCategory(
+  //     sqlCLient,
+  //     userId,
+  //     subCategoryId,
+  //     reqBody.name
+  //   );
+  //   return response;
+  // }
   static async getProductVendors(req: Request) {
     const sqlCLient = getSQLClient();
     const productId = Number(req.params.productId);

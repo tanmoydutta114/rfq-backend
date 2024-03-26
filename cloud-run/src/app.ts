@@ -130,14 +130,14 @@ app.get(
   callableWrapper(productsController.getSubProductsByProductId)
 );
 
-app.post(
-  "/api/query/product-categories",
-  ApiUtility.checkUserAuth({}),
-  checkPermissionAndReqSchema({
-    zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
-  }),
-  callableWrapper(productsController.getProductCategories)
-);
+// app.post(
+//   "/api/query/product-categories",
+//   ApiUtility.checkUserAuth({}),
+//   checkPermissionAndReqSchema({
+//     zodValidation: [{ zodSchema: ZProductsFetchReqBody }],
+//   }),
+//   callableWrapper(productsController.getProductCategories)
+// );
 
 app.post(
   "/api/query/product-brands",
@@ -162,24 +162,24 @@ app.get(
   callableWrapper(brandController.getVendorsByBrandAndProductId)
 );
 
-app.post(
-  "/api/main-categories/add",
-  ApiUtility.checkUserAuth({}),
-  checkPermissionAndReqSchema({}),
-  callableWrapper(productsController.storeProductMainCategories)
-);
-app.post(
-  "/api/main-categories/:mainCategoryId/sub-categories/add",
-  ApiUtility.checkUserAuth({}),
-  checkPermissionAndReqSchema({}),
-  callableWrapper(productsController.storeProductSubCategories)
-);
-app.post(
-  "/api/sub-categories/:subCategoryId/sub-sub-category/add",
-  ApiUtility.checkUserAuth({}),
-  checkPermissionAndReqSchema({}),
-  callableWrapper(productsController.storeProductSubSubCategories)
-);
+// app.post(
+//   "/api/main-categories/add",
+//   ApiUtility.checkUserAuth({}),
+//   checkPermissionAndReqSchema({}),
+//   callableWrapper(productsController.storeProductMainCategories)
+// );
+// app.post(
+//   "/api/main-categories/:mainCategoryId/sub-categories/add",
+//   ApiUtility.checkUserAuth({}),
+//   checkPermissionAndReqSchema({}),
+//   callableWrapper(productsController.storeProductSubCategories)
+// );
+// app.post(
+//   "/api/sub-categories/:subCategoryId/sub-sub-category/add",
+//   ApiUtility.checkUserAuth({}),
+//   checkPermissionAndReqSchema({}),
+//   callableWrapper(productsController.storeProductSubSubCategories)
+// );
 
 app.post(
   "/api/vendors",
